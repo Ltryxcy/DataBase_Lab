@@ -7,7 +7,16 @@ from django.core.paginator import Paginator
 
 # Create your views here.
 
-## 先创建admin的视图
+# 首页视图
+def index(request):
+    # 获取模板
+    template = loader.get_template('index.html')
+    # 返回首页
+    return HttpResponse(template.render(request=request))
+
+
+
+
 #  支行信息界面的视图
 def branches(request):
     branches_lists = Bank_Branch.objects.all() 
@@ -27,7 +36,7 @@ def branches(request):
 #  部门信息界面的视图
 def departments(request):
     # 获取所有部门信息
-    departments_lists = Bank_Department.objects.filter(branch_id = )
+    departments_lists = Bank_Department.objects.all()
     # 分页，每页显示6条数据
     paged = Paginator(departments_lists, 6)
     # 获取当前页码
@@ -45,4 +54,7 @@ def departments(request):
 
 # 部门员工
 def department_staff(request, department_id):
-    
+    branch_name = None
+    if request.user.is_superuser:
+        branch_name = request.user.username
+    branch = Bank_Department.objects.get(department_id=department_id).branch.branch_name
