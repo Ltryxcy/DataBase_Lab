@@ -59,7 +59,7 @@ class Branch_Manager(Bank_Staff):
 # 部门经理（<u>工号</u>，部门号）
 class  Department_Manager(Bank_Staff):
     # 部门经理是员工的子类
-    department_id = models.ForeignKey(Bank_Department, on_delete=models.CASCADE, related_name='DepartmentManager')
+    dept_id = models.ForeignKey(Bank_Department, on_delete=models.CASCADE, related_name='DepartmentManager')
     
     def __str__(self):
         return f"{self.staff_id}-{self.staff_name}"
