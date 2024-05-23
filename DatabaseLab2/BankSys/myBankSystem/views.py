@@ -12,9 +12,10 @@ from django.template import loader
 
 
 
-#   支行信息界面的视图
+##  支行信息界面的视图
 def branches(request):
-    branches_lists = Bank_Branch.objects.all() 
+    # 获取所有支行信息并按支行名称排序
+    branches_lists = Bank_Branch.objects.all().order_by('branch_name') 
     paged = Paginator(branches_lists, 6) # 分页，每页显示6条数据
     branches_page = paged.get_page(request.GET.get('page')) # 获取当前页码
     context = {'branches': branches_page}
@@ -29,7 +30,7 @@ def branches(request):
     template = loader.get_template('myBankSystem/branches.html')
     return HttpResponse(template.render(context, request))
     
-#   部门信息界面的视图
+##  部门信息界面的视图
 def departments(request):
     # 获取所有部门信息
     departments_lists = Bank_Department.objects.all()
@@ -46,9 +47,10 @@ def departments(request):
                 department.manager = manager.staff_name
     context = {'departments': departments_page}
     # 返回部门管理界面
-    return render(request, 'departments/departments.html', context)
+    template = loader.get_template('myBankSystem/departments.html')
+    return HttpResponse(template.render(context, request))
 
-#   部门员工的视图
+##  部门员工的视图
 def department_staff(request, department_id):
     branch_name = None
     if request.user.is_superuser:

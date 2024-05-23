@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部门管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+    <link href="C:\Users\86134\Desktop\.vscode\dblab\DatabaseLab2\BankSys\myBankSystem\static\css\style.css" rel="stylesheet"> <!-- 引入自定义的 CSS 文件 -->
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">部门管理</h1>
+            <div class="columns is-multiline">
+                {% for department in departments %}
+                    <div class="column is-one-third">
+                        <div class="card">
+                            <div class="card-content">
+                                <p class="title is-4">{{ department.department_name }}</p>
+                                <p class="subtitle is-6">所属支行：{{ department.branch.branch_name }}</p>
+                                <div class="content">
+                                    <p><strong>部门经理:</strong> {{ department.department_manager }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                {% if departments.has_previous %}
+                    <a class="pagination-previous" href="?page={{ departments.previous_page_number }}">上一页</a>
+                {% else %}
+                    <a class="pagination-previous" disabled>上一页</a>
+                {% endif %}
+
+                {% if departments.has_next %}
+                    <a class="pagination-next" href="?page={{ departments.next_page_number }}">下一页</a>
+                {% else %}
+                    <a class="pagination-next" disabled>下一页</a>
+                {% endif %}
+
+                <ul class="pagination-list">
+                    {% for num in departments.paginator.page_range %}
+                        {% if departments.number == num %}
+                            <li><a class="pagination-link is-current">{{ num }}</a></li>
+                        {% else %}
+                            <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </section>
+</body>
+</html>

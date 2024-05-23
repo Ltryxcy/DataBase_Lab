@@ -1,49 +1,53 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>银行支行信息</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>支行管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>银行支行信息</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>支行名称</th>
-                    <th>支行地址</th>
-                    <th>支行负责人</th>
-                </tr>
-            </thead>
-            <tbody>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">支行信息管理</h1>
+
+            <div class="columns is-multiline">
                 {% for branch in branches %}
-                <tr>
-                    <td>{{ branch.branch_name }}</td>
-                    <td>{{ branch.branch_address }}</td>
-                    <td>{{ branch.manager }}</td>
-                </tr>
+                    <div class="column is-one-third">
+                        <div class="card">
+                            <div class="card-content">
+                                <p class="subtitle">支行名称： {{ branch.branch_name }}</p>
+                                <p>所在城市： {{ branch.branch_city }}</p>
+                                <p>支行电话： {{ branch.branch_tel }}</p>
+                                <p>支行负责人： {{ branch.branch_manager }}</p>
+                            </div>
+                        </div>
+                    </div>
                 {% endfor %}
-            </tbody>
-        </table>
-        <div class="pagination">
-            <span class="step-links">
+            </div>
+
+            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
                 {% if branches.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ branches.previous_page_number }}">previous</a>
+                    <a class="pagination-previous" href="?page=1">&laquo; 1</a>
+                    <a class="pagination-previous" href="?page={{ branches.previous_page_number }}">前一页</a>
                 {% endif %}
-
-                <span class="current-page">
-                    Page {{ branches.number }} of {{ branches.paginator.num_pages }}
-                </span>
-
+                <ul class="pagination-list">
+                    <li>
+                        <a class="pagination-link is-current">{{ branches.number }}</a>
+                    </li>
+                </ul>
                 {% if branches.has_next %}
-                    <a href="?page={{ branches.next_page_number }}">next</a>
-                    <a href="?page={{ branches.paginator.num_pages }}">last &raquo;</a>
+                    <a class="pagination-next" href="?page={{ branches.next_page_number }}">后一页</a>
+                    <a class="pagination-next" href="?page={{ branches.paginator.num_pages }}">{{ branches.paginator.num_pages }} &raquo;</a>
                 {% endif %}
-            </span>
+            </nav>
         </div>
-    </div>
+    </section>
+
+    {% if messages %}
+    <script>
+        {% for msg in messages %}
+            alert('{{ msg.message }}');
+        {% endfor %}
+    </script>
+    {% endif %}
 </body>
 </html>
