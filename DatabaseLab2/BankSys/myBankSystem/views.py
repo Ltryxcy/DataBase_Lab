@@ -4,20 +4,15 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.template import loader
 
 # Create your views here.
 
-# 首页视图
-def index(request):
-    # 获取模板
-    template = loader.get_template('index.html')
-    # 返回首页
-    return HttpResponse(template.render(request=request))
 
 
-
-
-#  支行信息界面的视图
+#   支行信息界面的视图
 def branches(request):
     branches_lists = Bank_Branch.objects.all() 
     paged = Paginator(branches_lists, 6) # 分页，每页显示6条数据
@@ -31,9 +26,10 @@ def branches(request):
             if branch.branch_name == manager.branch_name.branch_name:
                 branch.manager = manager.staff_name 
     # 返回支行管理界面
-    return render(request, 'branches/branches.html', context) 
-
-#  部门信息界面的视图
+    template = loader.get_template('myBankSystem/branches.html')
+    return HttpResponse(template.render(context, request))
+    
+#   部门信息界面的视图
 def departments(request):
     # 获取所有部门信息
     departments_lists = Bank_Department.objects.all()
@@ -52,9 +48,23 @@ def departments(request):
     # 返回部门管理界面
     return render(request, 'departments/departments.html', context)
 
-# 部门员工
+#   部门员工的视图
 def department_staff(request, department_id):
     branch_name = None
     if request.user.is_superuser:
         branch_name = request.user.username
+    # 获取部门所属支行名称
     branch = Bank_Department.objects.get(department_id=department_id).branch.branch_name
+    # 如果当前用户不是超级用户或者当前用户不是部门所属支行的支行负责人
+    if (branch_name == None) or (branch_name != branch):
+        # 返回错误页面，错误信息：没有权限查看
+        return render(request, 'error.html', {'error': '没有权限查看'})
+    staff_lists = Bank_Staff.objects.filter(department_id=department_id) # 获取部门员工信息
+    # 分页，每页显示6条数据
+    paged = Paginator(staff_lists, 6)
+    # 获取当前页码
+    staff_page = paged.get_page(request.GET.get('page'))
+    context = {'staffs': staff_page}
+    return render(request, 'departments/staffs.html', context)
+
+##  
