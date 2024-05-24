@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
 from django.contrib.auth import authenticate, login
-from django.auth import UserCreationForm, AuthenticationForm
+from .forms 
 
 # Create your views here.
 
@@ -73,22 +73,6 @@ def department_staff(request, department_id):
 
 ##  用户登录界面
 def bank_user_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, request.POST)
-        if form.is_valid():
-            user_name = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=user_name, password=password)
-            if user is not None:
-                login(request, user)
-                # TODO:重定向到首页，这里还要修改
-                return redirect('branches')
-            else:
-                error_message = '用户名或密码错误'
-        else:
-            error_message = '用户名或密码错误'
-    else:
-        form = AuthenticationForm()
-        error_message = None
-    context = {'form': form, 'error_message': error_message}
-    return render(request, 'myBankSystem/login.html', context)
+    if request.method == 'POST': # 用户提交登录信息
+        
+    
