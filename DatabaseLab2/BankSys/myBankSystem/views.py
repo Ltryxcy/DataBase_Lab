@@ -8,11 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
 from django.contrib.auth import authenticate, login
-from .forms 
+from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm
 
 # Create your views here.
 
-
+def index(request):
+    # 返回主页
+    return render(request, 'myBankSystem/index.html')
 
 ##  支行信息界面的视图
 def branches(request):
@@ -72,7 +74,30 @@ def department_staff(request, department_id):
     return render(request, 'myBankSystem/department_staff.html', context)
 
 ##  用户登录界面
-def bank_user_login(request):
+def bank_customer_login(request):
     if request.method == 'POST': # 用户提交登录信息
-        
+        bank_customer_loginform = BankCustomer_LoginForm(request.POST)
+        # 判断登录表单是否有效
+        if bank_customer_loginform.is_valid():
+            # 获取用户名和密码
+            user_name = bank_customer_loginform.cleaned_data['username']
+            password = bank_customer_loginform.cleaned_data['password']
+            # 认证
+            user = authenticate(username=user_name, password=password)
+            # 如果用户存在
+            if user is not None:
+                # 登录
+                login(request, user)
+                # 返回主页
+                return redirect('myBankSystem:index')
+            else:
+                # 返回错误页面，错误信息：用户名或密码错误
+                return render(request, 'error.html', {'error': '用户名或密码错误'})
+        else:
+            return render(request, 'error.html', {'error': '不合法输入'})
+    elif request.method == 'GET': # 用户访问登录页面
+        bank_customer_loginform = BankCustomer_LoginForm()
+        context = {'form': bank_customer_loginform}
+        # 返回登录页面
+        return render(request, 'myBankSystem/login.html', context)    
     

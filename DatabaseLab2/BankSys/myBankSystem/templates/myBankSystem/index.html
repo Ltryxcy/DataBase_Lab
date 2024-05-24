@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>银行登录</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .hero {
+            background-image: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="box">
+                    <h1 class="title is-1">欢迎来到银行</h1>
+                    <p class="subtitle">登录或注册账户</p>
+                    {% if not user.is_authenticated %}
+                    <a class="button is-primary is-large" href="{% url 'users:register' %}">注册</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

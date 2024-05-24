@@ -17,7 +17,7 @@ class BankCustomer_RegisterForm(forms.Form):
     name = forms.CharField(label='姓名', strip=True, error_messages={'required': '姓名不能为空。'})
     tel = forms.CharField(label='电话号码', strip=True, error_messages={'required': '电话号码不能为空。'})
     # 邮箱可以为空
-    email = forms.EmailField(label='邮箱', strip=True, required=False)
+    email = forms.EmailField(label='邮箱')
     account_cnt = forms.IntegerField(label='名下账户数', initial=0, disabled=True)
     class Meta:
        model = Bank_Customer
@@ -32,7 +32,7 @@ class BankCustomer_EditForm(forms.Form):
     # 电话号码不能为空
     tel = forms.CharField(label='电话号码', strip=True, error_messages={'required': '电话号码不能为空。'})
     # 邮箱可以为空
-    email = forms.EmailField(label='邮箱', strip=True, required=False)
+    email = forms.EmailField(label='邮箱', required=False)
     # 名下账户数不能修改
     account_cnt = forms.IntegerField(label='名下账户数', disabled=True)
     class meta:
