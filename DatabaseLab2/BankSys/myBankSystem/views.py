@@ -1,12 +1,14 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
+from django.contrib.auth import authenticate, login
+from django.auth import UserCreationForm, AuthenticationForm
 
 # Create your views here.
 
@@ -67,6 +69,26 @@ def department_staff(request, department_id):
     # 获取当前页码
     staff_page = paged.get_page(request.GET.get('page'))
     context = {'staffs': staff_page}
-    return render(request, 'departments/staffs.html', context)
+    return render(request, 'myBankSystem/department_staff.html', context)
 
-##  
+##  用户登录界面
+def bank_user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            user_name = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=user_name, password=password)
+            if user is not None:
+                login(request, user)
+                # TODO:重定向到首页，这里还要修改
+                return redirect('branches')
+            else:
+                error_message = '用户名或密码错误'
+        else:
+            error_message = '用户名或密码错误'
+    else:
+        form = AuthenticationForm()
+        error_message = None
+    context = {'form': form, 'error_message': error_message}
+    return render(request, 'myBankSystem/login.html', context)

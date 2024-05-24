@@ -1,25 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>部门管理</title>
-    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
-    <link href="C:\Users\86134\Desktop\.vscode\dblab\DatabaseLab2\BankSys\myBankSystem\static\css\style.css" rel="stylesheet"> <!-- 引入自定义的 CSS 文件 -->
+    <!-- 加载静态文件模板标签 -->
+    {% load static %}
+    <!-- 引入 Bulma CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <!-- 引入自定义 CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <section class="section">
         <div class="container">
-            <h1 class="title has-text-centered">部门管理</h1>
+            <h1 class="title has-text-centered">部门信息管理</h1> <!-- 标题居中 -->
             <div class="columns is-multiline">
                 {% for department in departments %}
                     <div class="column is-one-third">
                         <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">
+                                    {{ department.department_name }}
+                                </p>
+                            </header>
                             <div class="card-content">
-                                <p class="title is-4">{{ department.department_name }}</p>
-                                <p class="subtitle is-6">所属支行：{{ department.branch.branch_name }}</p>
                                 <div class="content">
-                                    <p><strong>部门经理:</strong> {{ department.department_manager }}</p>
+                                    <p>所属支行: {{ department.branch.branch_name }}</p>
+                                    <p>部门经理: {{ department.department_manager }}</p>
                                 </div>
                             </div>
                         </div>
