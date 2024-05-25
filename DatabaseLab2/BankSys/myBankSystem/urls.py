@@ -8,7 +8,7 @@ urlpatterns = [
     path('departments/', views.departments, name='departments'),
     path('department_staff/<int:department_id>/', views.department_staff, name='department_staff'),
     path('login/', views.bank_customer_login, name='login'),
-    # path('register/', views.bank, name='register'),
+    path('register/', views.bank_customer_register, name='register'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

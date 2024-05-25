@@ -2,14 +2,14 @@ from django.http import HttpResponse
 from django.template import loader
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager
+from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
 from django.contrib.auth import authenticate, login
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm
-
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
 def index(request):
@@ -99,5 +99,34 @@ def bank_customer_login(request):
         bank_customer_loginform = BankCustomer_LoginForm()
         context = {'form': bank_customer_loginform}
         # 返回登录页面
-        return render(request, 'myBankSystem/login.html', context)    
+        return render(request, 'myBankSystem/login.html', context) 
+#   用户注册界面
+def bank_customer_register(request):
+    if request.method == 'POST':
+        bank_customer_registerform = BankCustomer_RegisterForm(request.POST)
+        # 处理用户注册，进行初始化
+        creation_form = UserCreationForm(request.POST)
+        if creation_form.is_valid() and bank_customer_registerform.is_valid():
+            user_name = creation_form.cleaned_data['username']
+            password = creation_form.cleaned_data['password1']
+            id = bank_customer_registerform.cleaned_data['id']
+            name = bank_customer_registerform.cleaned_data['name']
+            tel = bank_customer_registerform.cleaned_data['tel']
+            email = bank_customer_registerform.cleaned_data['email']
+            account_cnt = bank_customer_registerform.cleaned_data['account_cnt']
+            # 创建用户
+            user = User.objects.create_user(username=user_name, password=password)
+            bank_customer = Bank_Customer.objects.create(user=user, id=id, name=name, tel=tel, email=email, account_cnt=account_cnt)
+            bank_customer.save() # 保存新创建的用户
+            login(request, user) # 登录
+            return redirect('myBankSystem:index')
+        else:
+            return render(request, 'error.html', {'error': '输入不合法或该用户名/身份证号码已注册'})
+    elif request.method == 'GET': # 用户访问注册页面
+        bank_customer_registerform = BankCustomer_RegisterForm()
+        creation_form = UserCreationForm()
+        context = {'form': creation_form, 'register_form': bank_customer_registerform}
+        # 返回注册页面
+        return render(request, 'myBankSystem/register.html', context)
+        
     
