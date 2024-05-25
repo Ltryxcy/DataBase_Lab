@@ -1,0 +1,60 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block title %}注册新账户{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h2 class="title has-text-centered">注册一个新的账户</h2>
+    <div class="box">
+      <form method="post" action="{% url 'myBankSystem:register' %}">
+        {% csrf_token %}
+        <div class="field">
+          <label class="label">用户名</label>
+          <div class="control">
+            {{ form.username }}
+            {% if form.username.errors %}
+              <p class="help is-danger">{{ form.username.errors }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">密码</label>
+          <div class="control">
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+              <p class="help is-danger">{{ form.password1.errors }}</p>
+            {% endif %}
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">确认密码</label>
+          <div class="control">
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+              <p class="help is-danger">{{ form.password2.errors }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% for field in register_form %}
+          <div class="field">
+            <label class="label">{{ field.label }}</label>
+            <div class="control">
+              {{ field }}
+              {% if field.errors %}
+                <p class="help is-danger">{{ field.errors }}</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        <div class="field">
+          <div class="control">
+            <button name="submit" class="button is-primary">注册</button>
+          </div>
+        </div>
+        <input type="hidden" name="next" value="{% url 'myBankSystem:index' %}">
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
