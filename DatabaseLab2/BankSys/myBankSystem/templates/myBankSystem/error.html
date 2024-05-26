@@ -13,6 +13,9 @@
         background-image: linear-gradient(to right, #6a11cb, #2575fc);
         color: white;
       }
+      .button-margin {
+        margin-top: 20px;
+      }
     </style>
   </head>
   <body>
@@ -20,10 +23,10 @@
       <div class="hero-body">
         <div class="container">
           <div class="box">
-            <h1 class="title has-text-centered">错误</h1>
-            <p class="subtitle has-text-centered">{{ error_message }}</p>
-            <div class="buttons is-centered">
-              <a class="button is-primary" href="{% url 'frontend:index' %}">返回首页</a>
+            <h1 class="title is-size-2 has-text-centered">发生错误</h1>
+            <p class= "is-size-4 has-text-centered">{{ error }}</p>
+            <div class="buttons is-centered button-margin">
+              <a class="button is-primary" href="{% url 'myBankSystem:index' %}">返回首页</a>
             </div>
           </div>
         </div>

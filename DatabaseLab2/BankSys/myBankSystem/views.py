@@ -7,9 +7,9 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 # Create your views here.
 
 def index(request):
@@ -64,7 +64,7 @@ def department_staff(request, department_id):
     # 如果当前用户不是超级用户或者当前用户不是部门所属支行的支行负责人
     if (branch_name == None) or (branch_name != branch):
         # 返回错误页面，错误信息：没有权限查看
-        return render(request, 'error.html', {'error': '没有权限查看'})
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看'})
     staff_lists = Bank_Staff.objects.filter(department_id=department_id) # 获取部门员工信息
     # 分页，每页显示6条数据
     paged = Paginator(staff_lists, 6)
@@ -92,9 +92,9 @@ def bank_customer_login(request):
                 return redirect('myBankSystem:index')
             else:
                 # 返回错误页面，错误信息：用户名或密码错误
-                return render(request, 'error.html', {'error': '用户名或密码错误'})
+                return render(request, 'myBankSystem/error.html', {'error': '用户名或密码错误'})
         else:
-            return render(request, 'error.html', {'error': '不合法输入'})
+            return render(request, 'myBankSystem/error.html', {'error': '不合法输入'})
     elif request.method == 'GET': # 用户访问登录页面
         bank_customer_loginform = BankCustomer_LoginForm()
         context = {'form': bank_customer_loginform}
@@ -128,5 +128,44 @@ def bank_customer_register(request):
         context = {'form': creation_form, 'register_form': bank_customer_registerform}
         # 返回注册页面
         return render(request, 'myBankSystem/register.html', context)
-        
-    
+
+
+#   用户修改密码视图
+def change_password(request, customer_id):
+    # 获取用户
+    user = User.objects.get(id=customer_id)
+    # 如果用户不是当前用户
+    if user != request.user:
+        # 返回错误页面，错误信息：没有权限修改密码
+        return render(request, 'error.html', {'error': '没有权限修改密码'})
+    if request.method == 'POST':
+        edit_form = PasswordChangeForm(user=request.user, data=request.POST)
+        if edit_form.is_valid():
+            edit_form.save()
+            # 更新session，修改完密码后，用户需要重新登录
+            update_session_auth_hash(request, edit_form.user)
+            # 返回主页
+            return redirect('myBankSystem:index')
+    if request.method == 'GET':
+        edit_form = PasswordChangeForm(user=request.user)
+    context = {'form': edit_form}
+    render(request, 'myBankSystem/change_password.html', context)
+
+#   用户编辑信息视图
+def edit_customer(request, customer_id):
+    # 获取用户
+    customer = User.objects.get(id=customer_id)
+    information = Bank_Customer.objects.get(user=customer)
+    # 如果用户不是当前用户，且当前用户不是超级用户，没有权限修改信息
+    if customer != request.user and not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限修改信息'})
+    if request.method == 'POST':
+        editform = BankCustomer_EditForm(request.POST)
+        if editform.is_valid():
+            information.name = editform.cleaned_data['name']
+            information.tel = editform.cleaned_data['tel']
+            information.email = editform.cleaned_data['email']
+            information.save()
+            return redirect('myBankSystem:index', customer_id=customer_id)
+    if request.method == 'GET':
+        editform = BankCustomer_EditForm(instance=information)

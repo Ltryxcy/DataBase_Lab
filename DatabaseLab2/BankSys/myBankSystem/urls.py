@@ -10,6 +10,8 @@ urlpatterns = [
     path('login/', views.bank_customer_login, name='login'),
     path('register/', views.bank_customer_register, name='register'),
     path('', include('django.contrib.auth.urls')),
+    path('change_password/<int:customer_id>/', views.change_password, name='change_password'),
+    path('edit/<int:customer_id>/', views.edit_customer, name='edit'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

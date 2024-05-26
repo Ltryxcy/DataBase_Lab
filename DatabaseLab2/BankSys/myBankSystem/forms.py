@@ -38,3 +38,5 @@ class BankCustomer_EditForm(forms.Form):
     class meta:
         model = Bank_Customer
         fields = ('id', 'name', 'tel', 'email', 'account_cnt')
+        
+# class 
