@@ -6,8 +6,7 @@ from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, De
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.template import loader
-from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 
@@ -174,7 +173,29 @@ def edit_customer(request, customer_id):
     context = {'form': editform, 'customer_id': customer_id}
     return render(request, 'myBankSystem/edition.html', context)
 
-#  用户注销视图
+#  获取用户信息，需要管理员权限
+@login_required
+def fetch_customers_information(request):
+    user_name = None
+    # 如果当前用户是超级用户
+    if request.user.is_superuser:
+        user_name = request.user.username
+    if user_name != None:
+        # 获取所有用户信息
+        customers_lists = Bank_Customer.objects.all()
+        # 分页，每页显示6条数据
+        paged = Paginator(customers_lists, 6)
+        # 获取当前页码
+        customers_page = paged.get_page(request.GET.get('page'))
+        context = {'customers': customers_page}
+        return render(request, 'myBankSystem/customers_information.html', context)
+
+@login_required
+def log_out(request):
+    # 退出登录
+    logout(request)
+    # 返回登录页面
+    return render(request, 'myBankSystem/logout.html')
 
 # 创建账户，要求处于登录状态
 @login_required
@@ -197,4 +218,11 @@ def create_account(request, customer_id):
             user.save()
             # 生成账单
             transaction = Transaction.objects.create(account=account, money=account_money, transaction_detail='创建账户')
+            transaction.save()
+            return redirect('myBankSystem:accounts', customer_id=customer_id)
+    else:
+        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch})
+        
+    context = {'form': account_form}
+    return render(request, 'myBankSystem/create_account.html', context)
         
