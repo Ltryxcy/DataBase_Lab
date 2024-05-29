@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('myBankSystem/', include('myBankSystem.urls')),
+    path('', include('frontend.urls', namespace='fronted')),
+    path('myBankSystem/', include('myBankSystem.urls', namespace='myBankSystem')),
 ]

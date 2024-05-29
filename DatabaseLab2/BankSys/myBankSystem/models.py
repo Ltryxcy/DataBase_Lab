@@ -105,8 +105,8 @@ class Transaction(models.Model):
         ('收入', '收入'),
         ('支出', '支出'),
     ]
-    # 默认为收入
-    transaction_type = models.CharField(max_length=100, choices=types, default='收入')
+    # 默认为支出
+    transaction_type = models.CharField(max_length=100, choices=types, default='支出')
     # 交易详情
     transaction_detail = models.CharField(max_length=100, blank=True)
     # 账户号，存在外键关联，设置为级联删除

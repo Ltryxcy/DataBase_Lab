@@ -2,19 +2,18 @@ from django.http import HttpResponse
 from django.template import loader
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account
+from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account, Transaction
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import loader
 from django.contrib.auth import authenticate, login, update_session_auth_hash
-from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm
+from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+
 # Create your views here.
 
-def index(request):
-    # 返回主页
-    return render(request, 'myBankSystem/index.html')
+
 
 ##  支行信息界面的视图
 def branches(request):
@@ -89,7 +88,7 @@ def bank_customer_login(request):
                 # 登录
                 login(request, user)
                 # 返回主页
-                return redirect('myBankSystem:index')
+                return redirect('frontend:index')
             else:
                 # 返回错误页面，错误信息：用户名或密码错误
                 return render(request, 'myBankSystem/error.html', {'error': '用户名或密码错误'})
@@ -119,9 +118,9 @@ def bank_customer_register(request):
             bank_customer = Bank_Customer.objects.create(user=user, id=id, name=name, tel=tel, email=email, account_cnt=account_cnt)
             bank_customer.save() # 保存新创建的用户
             login(request, user) # 登录
-            return redirect('myBankSystem:index')
+            return redirect('frontend:index')
         else:
-            return render(request, 'error.html', {'error': '输入不合法或该用户名/身份证号码已注册'})
+            return render(request,'myBankSystem/error.html', {'error': '输入不合法或该用户名/身份证号码已注册'})
     elif request.method == 'GET': # 用户访问注册页面
         bank_customer_registerform = BankCustomer_RegisterForm()
         creation_form = UserCreationForm()
@@ -130,14 +129,15 @@ def bank_customer_register(request):
         return render(request, 'myBankSystem/register.html', context)
 
 
-#   用户修改密码视图
+#   用户修改密码视图，需要登录
+@login_required
 def change_password(request, customer_id):
     # 获取用户
     user = User.objects.get(id=customer_id)
     # 如果用户不是当前用户
     if user != request.user:
         # 返回错误页面，错误信息：没有权限修改密码
-        return render(request, 'error.html', {'error': '没有权限修改密码'})
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限修改密码'})
     if request.method == 'POST':
         edit_form = PasswordChangeForm(user=request.user, data=request.POST)
         if edit_form.is_valid():
@@ -145,13 +145,14 @@ def change_password(request, customer_id):
             # 更新session，修改完密码后，用户需要重新登录
             update_session_auth_hash(request, edit_form.user)
             # 返回主页
-            return redirect('myBankSystem:index')
+            return redirect('fronend:index')
     if request.method == 'GET':
         edit_form = PasswordChangeForm(user=request.user)
     context = {'form': edit_form}
     render(request, 'myBankSystem/change_password.html', context)
 
 #   用户编辑信息视图
+@login_required
 def edit_customer(request, customer_id):
     # 获取用户
     customer = User.objects.get(id=customer_id)
@@ -166,6 +167,34 @@ def edit_customer(request, customer_id):
             information.tel = editform.cleaned_data['tel']
             information.email = editform.cleaned_data['email']
             information.save()
-            return redirect('myBankSystem:index', customer_id=customer_id)
+            # 返回主页
+            return redirect('frontend:index', customer_id=customer_id)
     if request.method == 'GET':
         editform = BankCustomer_EditForm(instance=information)
+    context = {'form': editform, 'customer_id': customer_id}
+    return render(request, 'myBankSystem/edition.html', context)
+
+#  用户注销视图
+
+# 创建账户，要求处于登录状态
+@login_required
+def create_account(request, customer_id):
+    user = Bank_Customer.objects.get(user_id=customer_id)
+    # 判断是否为当前用户
+    if request.user.id != customer_id:
+        return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})  
+    branch = Bank_Branch.objects.get(branch_name=user.branch.branch_name)
+    # 处理POST请求，创建账户
+    if request.method == 'POST':
+        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch}, data=request.POST)
+        #  判断表单是否有效
+        if account_form.is_valid():
+            account_money = account_form.cleaned_data['account_money']
+            account = Customer_Account.objects.create(customer=user, branches=branch, account_money=account_money)
+            account.save()
+            # 实现 trigger
+            user.account_cnt = user.account_cnt + 1
+            user.save()
+            # 生成账单
+            transaction = Transaction.objects.create(account=account, money=account_money, transaction_detail='创建账户')
+        

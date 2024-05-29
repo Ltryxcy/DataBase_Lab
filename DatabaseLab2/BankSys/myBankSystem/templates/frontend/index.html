@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+{% extends  "myBankSystem/base.html"%}
+{% comment %} {% load static %} {% endcomment %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>银行登录</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .hero {
+            background-image: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+        }
+    </style> 
+</head>
+<body>
+    <section class="hero is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="box">
+                    <h1 class="title is-1">欢迎来到科大银行</h1>
+                    {%if user.is_authenticated%}
+                    <p> 您已经登录，欢迎回来！</p>
+                    {% else %}
+                    {% comment %} <a class="button is-primary is-large" href="{% url 'myBankSystem:register' %}">注册</a>
+                    {% endcomment %}
+                    <p> 您还没有登录，请先登录！</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

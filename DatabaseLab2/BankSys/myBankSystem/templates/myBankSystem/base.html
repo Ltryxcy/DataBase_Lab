@@ -26,7 +26,7 @@
   <body>
     <nav class="navbar is-light" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        <a class="navbar-item" href="{% url 'myBankSystem:index' %}">
+        <a class="navbar-item" href="{% url 'frontend:index' %}">
           <span class="icon">
             <i class="fas fa-university"></i>
           </span>
@@ -68,13 +68,13 @@
                           <i class="fas fa-cog"></i>
                         </span>
                         <span>系统后台</span>
-                      </a>
-                      {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:customer_info' %}">
+                      {% comment %} </a>
+                      <a class="navbar-item" href="{% url 'myBankSystem:customer_info' %}">
                         <span class="icon">
                           <i class="fas fa-users"></i>
                         </span>
-                        <span>客户信息</span>
-                      </a> 
+                        <span>客户信息</span> {% endcomment %}
+                      </a>  {% comment %}
                       <a class="navbar-item" href="{% url 'myBankSystem:loans_info' %}">
                         <span class="icon">
                           <i class="fas fa-hand-holding-usd"></i>
@@ -168,7 +168,7 @@
           <span class="icon">
             <i class="fas fa-copyright"></i>
           </span>
-          <small>&nbsp;<a href="">https://github.com/Lan13/Database-BankSystem</a></small>
+          <small>&nbsp;<a href="">https://github.com/Ltryxcy/DataBase_Lab</a></small>
         </p>
       </div>
     </footer>

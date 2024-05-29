@@ -1,0 +1,29 @@
+{% extends "myBankSystem/base.html" %}
+{% load bulma_tags %}
+
+{% block page_header %}
+  <div class="hero is-primary">
+    <div class="hero-body">
+      <p class="title has-text-centered">修改你的个人信息</p>
+    </div>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <form method="post" action="{% url 'myBankSystem:edit' user_id %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% bulma_form form %}
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-primary" name="submit">确认修改</button>
+        </div>
+        <div class="control">
+          <input type="hidden" name="next" value="{% url 'myBankSystem:accounts' user_id %}">
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock content %}
