@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myBankSystem.apps.MybanksystemConfig',
+    'bulma',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -93,6 +95,7 @@ DATABASES = {
         'PASSWORD': "625625",
         'HOST': "127.0.0.1",
         'PORT': "3306",
+        'ATOMIC_REQUESTS': True, # 允许事务
     }
 }
 

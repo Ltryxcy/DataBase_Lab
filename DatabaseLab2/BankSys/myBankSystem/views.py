@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.db import transaction
 
 # Create your views here.
 
@@ -144,11 +145,11 @@ def change_password(request, customer_id):
             # 更新session，修改完密码后，用户需要重新登录
             update_session_auth_hash(request, edit_form.user)
             # 返回主页
-            return redirect('fronend:index')
-    if request.method == 'GET':
+            return redirect('myBankSystem:index')
+    else:
         edit_form = PasswordChangeForm(user=request.user)
     context = {'form': edit_form}
-    render(request, 'myBankSystem/change_password.html', context)
+    return render(request, 'myBankSystem/change_password.html', context)
 
 #   用户编辑信息视图
 @login_required
@@ -188,8 +189,9 @@ def fetch_customers_information(request):
         # 获取当前页码
         customers_page = paged.get_page(request.GET.get('page'))
         context = {'customers': customers_page}
-        return render(request, 'myBankSystem/customers_information.html', context)
+        return render(request, 'myBankSystem/customers_info.html', context)
 
+#  退出登录状态
 @login_required
 def log_out(request):
     # 退出登录
@@ -199,19 +201,19 @@ def log_out(request):
 
 # 创建账户，要求处于登录状态
 @login_required
-def create_account(request, customer_id):
+def create_account(request, customer_id, branch_name):
     user = Bank_Customer.objects.get(user_id=customer_id)
     # 判断是否为当前用户
     if request.user.id != customer_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})  
-    branch = Bank_Branch.objects.get(branch_name=user.branch.branch_name)
     # 处理POST请求，创建账户
     if request.method == 'POST':
-        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch}, data=request.POST)
+        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch_name}, data=request.POST)
+        branch = Bank_Branch.objects.get(branch_name=branch_name)
         #  判断表单是否有效
         if account_form.is_valid():
             account_money = account_form.cleaned_data['account_money']
-            account = Customer_Account.objects.create(customer=user, branches=branch, account_money=account_money)
+            account = Customer_Account.objects.create(customer=user, branch=branch, account_money=account_money)
             account.save()
             # 实现 trigger
             user.account_cnt = user.account_cnt + 1
@@ -225,4 +227,49 @@ def create_account(request, customer_id):
         
     context = {'form': account_form}
     return render(request, 'myBankSystem/create_account.html', context)
+
+#  显示当前客户名下的账户信息，需要登录状态
+@login_required
+def accounts_info(request, customer_id):
+    account_user = Bank_Customer.objects.get(id=customer_id)
+    if request.user.id != customer_id and not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '无法查看他人账户'})
+    # 获取当前用户的账户信息
+    account_list = Customer_Account.objects.filter(customer_id=account_user.id)
+    # 分页，每页显示6条数据
+    paged = Paginator(account_list, 6)
+    account_page = paged.get_page(request.GET.get('page'))
+    context = {'accounts': account_page, 'account_user': account_user}
+    return render(request, 'myBankSystem/account_info.html', context)
+
+# 删除账户，需要登录状态
+@login_required
+def delete_account(request, account_id):
+    account = Customer_Account.objects.get(account_id=account_id)
+    user = Bank_Customer.objects.get(id=account.customer_id)
+    # 判断是否为账户的拥有者
+    if request.user.id != user.user_id:
+        return render(request, 'myBankSystem/error.html', {'error': '无法删除他人账户'})
+    if not account or account.account_money > 0:
+        return render(request, 'myBankSystem/error.html', {'error': '无法删除账户'})
+    # 触发器，自动更新用户的账户数
+    user.account_cnt = user.account_cnt - 1
+    user.save()
+    account.delete()
+    
+    return redirect('myBankSystem:account_info', customer_id=user.id)
+
+# 转账，需要登录状态
+# @login_required
+# @transaction.atomic
+# def trade(request, account_id):
+#     # 交易方的账户和客户
+#     account = Customer_Account.objects.get(account_id=account_id)
+#     customer = Bank_Customer.objects.get(id=account.customer_id)
+#     # 判断是否是账户的拥有者
+#     if request.user.id != customer.customer_id:
+#         return render(request, 'myBankSystem/error.html', {'error': '您没有此账户权限！'})
+#     if request.method == 'POST':
+#         trade_form = Accounts_Trade_Form(initial={'account': account}, data=request.POST)
+        
         

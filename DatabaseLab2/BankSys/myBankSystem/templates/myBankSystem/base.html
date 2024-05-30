@@ -62,7 +62,7 @@
                   </a>
 
                   <div class="navbar-dropdown is-right">
-                    {% if user.is_superuser %}
+                    {% if user.is_superuser %} 
                       <a class="navbar-item" href="/admin">
                         <span class="icon">
                           <i class="fas fa-cog"></i>
@@ -80,14 +80,15 @@
                           <i class="fas fa-hand-holding-usd"></i>
                         </span>
                         <span>贷款信息</span>
-                      </a>
+                      </a>  {% endcomment %}
                     {% else %}
-                      <a class="navbar-item" href="{% url 'myBankSystem:accounts' user.id %}">
+                      <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
                         <span class="icon">
                           <i class="fas fa-credit-card"></i>
                         </span>
                         <span>账户信息</span>
                       </a>
+                      {% comment %}
                       <a class="navbar-item" href="{% url 'myBankSystem:loans' user.id %}">
                         <span class="icon">
                           <i class="fas fa-hand-holding-usd"></i>
@@ -95,24 +96,25 @@
                         <span>贷款信息</span>
                       </a>  
                       {% endcomment %}
-                      {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
+                      <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
                         <span class="icon">
                           <i class="fas fa-user-edit"></i>
                         </span>
-                        <span>修改信息</span> {% endcomment %}
-                      {% comment %} </a>
-                      <a class="navbar-item" href="{% url 'myBankSystem:change_pwd' user.id %}">
+                        <span>修改信息</span>
+                      </a>
+                      <a class="navbar-item" href="{% url 'myBankSystem:change_password' user.id %}">
                         <span class="icon">
                           <i class="fas fa-key"></i>
                         </span>
                         <span>修改密码</span>
-                      </a> {% endcomment %}
-                      {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:create_account' user.id %}">
+                      </a>
+                      {% comment %}
+                      <a class="navbar-item" href="{% url 'myBankSystem:create_account' customer_id=customer.id branch_name=branch.branch_name %}">
                         <span class="icon">
                           <i class="fas fa-plus-circle"></i>
                         </span>
                         <span>创建账户</span>
-                      </a>  
+                      </a>   {% endcomment %}
                       {% comment %} <a class="navbar-item" href="{% url 'loans:apply_loan' user.id %}">
                         <span class="icon">
                           <i class="fas fa-hand-holding-usd"></i>

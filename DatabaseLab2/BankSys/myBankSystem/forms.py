@@ -35,7 +35,7 @@ class BankCustomer_EditForm(forms.ModelForm):
     email = forms.EmailField(label='邮箱', required=False)
     # 名下账户数不能修改
     account_cnt = forms.IntegerField(label='名下账户数', disabled=True)
-    class meta:
+    class Meta:
         model = Bank_Customer
         fields = ('id', 'name', 'tel', 'email', 'account_cnt')
         
