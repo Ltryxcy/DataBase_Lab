@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch
+from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions
 
 # 登录只有用户名和密码两个字段
 class BankCustomer_LoginForm(forms.Form):
@@ -58,4 +58,16 @@ class Accounts_Trade_Form(forms.ModelForm):
     class meta:
         model = Customer_Account
         fields = ('src_account', 'target_account', 'trade_money')
+    
+##  交易记录表单，包含交易记录号，交易金额，交易类型，交易详情，账户号，交易时间
+class Account_Transactions_Form(forms.ModelForm):
+    transactions_type = [('收入', '收入'), 
+                         ('支出', '支出'),]
+    account = forms.ModelChoiceField(label='账户信息', queryset=Customer_Account.objects.all(), disabled=True)
+    trade_money = forms.FloatField(label='交易金额', min_value=0.0)
+    trade_type = forms.ChoiceField(label='交易类型', choices=transactions_type)
+    trade_detail = forms.CharField(label='交易详情', required=False)
+    class Meta:
+        model = Transactions
+        fields = ('account', 'trade_money', 'trade_type', 'trade_detail')
     

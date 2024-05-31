@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>科大银行</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -13,8 +13,9 @@
         font-size: 1.2rem;
       }
       .hero {
-        background-image: linear-gradient(to right, #6a11cb, #2575fc);
+        background-image: linear-gradient(to bottom, #0000FF, #87CEFA);
         color: white;
+        height: 70vh;
       }
       .footer {
         background-color: #f5f5f5;
@@ -30,15 +31,15 @@
           <span class="icon">
             <i class="fas fa-university"></i>
           </span>
-          <span>银行</span>
+          <span>银行首页</span>
         </a>
 
         <a class="navbar-item" href="{% url 'myBankSystem:branches' %}">
-          支行
+          支行信息
         </a>
 
         <a class="navbar-item" href="{% url 'myBankSystem:departments' %}">
-          部门
+          部门信息
         </a>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -80,7 +81,7 @@
                           <i class="fas fa-hand-holding-usd"></i>
                         </span>
                         <span>贷款信息</span>
-                      </a>  {% endcomment %}
+                      </a>  
                     {% else %}
                       <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
                         <span class="icon">
@@ -95,7 +96,7 @@
                         </span>
                         <span>贷款信息</span>
                       </a>  
-                      {% endcomment %}
+                      
                       <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
                         <span class="icon">
                           <i class="fas fa-user-edit"></i>
@@ -108,19 +109,19 @@
                         </span>
                         <span>修改密码</span>
                       </a>
-                      {% comment %}
+                      
                       <a class="navbar-item" href="{% url 'myBankSystem:create_account' customer_id=customer.id branch_name=branch.branch_name %}">
                         <span class="icon">
                           <i class="fas fa-plus-circle"></i>
                         </span>
                         <span>创建账户</span>
-                      </a>   {% endcomment %}
-                      {% comment %} <a class="navbar-item" href="{% url 'loans:apply_loan' user.id %}">
+                      </a>   
+                      <a class="navbar-item" href="{% url 'loans:apply_loan' user.id %}">
                         <span class="icon">
                           <i class="fas fa-hand-holding-usd"></i>
                         </span>
                         <span>申请贷款</span>
-                      </a> {% endcomment %}
+                      </a> 
                     {% endif %}
                     <hr class="navbar-divider">
                     <form method="post" action="{% url 'myBankSystem:logout' %}" sytle= "display:inline;">
@@ -187,4 +188,161 @@
       });
     </script>
   </body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}科大银行{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <style>
+      .navbar-brand {
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      .hero {
+        background-image: linear-gradient(to bottom, #0000FF, #87CEFA);
+        color: white;
+        height: 15vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .main-content {
+        background-color: #f5f5f5; 
+        padding: 2rem;
+      }
+      .footer {
+        background-color: #f5f5f5;
+        padding: 1rem;
+      }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'frontend:index' %}">
+                <span class="icon">
+                    <i class="fas fa-university"></i>
+                </span>
+                <span>银行首页</span>
+            </a>
+            <a class="navbar-item" href="{% url 'myBankSystem:branches' %}">
+                支行信息
+            </a>
+            <a class="navbar-item" href="{% url 'myBankSystem:departments' %}">
+                部门信息
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        {% if user.is_authenticated %}
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                <span class="icon">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <span>{{ user.username }}</span>
+                            </a>
+                            <div class="navbar-dropdown is-right">
+                                {% if user.is_superuser %}
+                                <a class="navbar-item" href="/admin">
+                                    <span class="icon">
+                                        <i class="fas fa-cog"></i>
+                                    </span>
+                                    <span>系统后台</span>
+                                </a>
+                                {% else %}
+                                <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
+                                    <span class="icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </span>
+                                    <span>客户信息</span>
+                                </a>
+                                <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
+                                    <span class="icon">
+                                        <i class="fas fa-user-edit"></i>
+                                    </span>
+                                    <span>修改信息</span>
+                                </a>
+                                <a class="navbar-item" href="{% url 'myBankSystem:change_password' user.id %}">
+                                    <span class="icon">
+                                        <i class="fas fa-key"></i>
+                                    </span>
+                                    <span>修改密码</span>
+                                </a>
+                                {% endif %}
+                                <hr class="navbar-divider">
+                                <form method="post" action="{% url 'myBankSystem:logout' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button class="button is-danger is-fullwidth">
+                                        <span class="icon">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </span>
+                                        <span>退出</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="button is-light" href="{% url 'myBankSystem:login' %}">
+                            <span class="icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </span>
+                            <span>登录</span>
+                        </a>
+                        <a class="button is-primary" href="{% url 'myBankSystem:register' %}">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>注册</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav> 
+    <section class="hero is-medium">
+        <div class="hero-body">
+            <p class="title has-text-centered">
+                {% block page_header %}{% endblock page_header %}
+            </p>
+        </div>
+    </section>
+    <section class="section main-content">
+        <div class="container">
+            {% block content %}{% endblock content %}
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <span class="icon">
+                    <i class="fas fa-copyright"></i>
+                </span>
+                <small>&nbsp;<a href="https://github.com/Ltryxcy/DataBase_Lab">https://github.com/Ltryxcy/DataBase_Lab</a></small>
+            </p>
+        </div>
+    </footer>
+    <script>
+        $(document).ready(function() {
+            $(".navbar-burger").click(function() {
+                $(".navbar-burger").toggleClass("is-active");
+                $(".navbar-menu").toggleClass("is-active");
+            });
+        });
+    </script>
+</body>
 </html>

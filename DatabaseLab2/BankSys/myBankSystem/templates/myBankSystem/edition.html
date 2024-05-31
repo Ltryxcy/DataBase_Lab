@@ -1,29 +1,67 @@
-{% extends "myBankSystem/base.html" %}
-{% load bulma_tags %}
+{% extends 'myBankSystem/base.html' %}
+
 
 {% block page_header %}
-  <div class="hero is-primary">
-    <div class="hero-body">
-      <p class="title has-text-centered">修改你的个人信息</p>
-    </div>
-  </div>
+  修改您的个人信息
 {% endblock page_header %}
 
 {% block content %}
 <section class="section">
   <div class="container">
-    <form method="post" action="{% url 'myBankSystem:edition' customer_id %}" enctype="multipart/form-data">
-      {% csrf_token %}
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-primary" name="submit">确认修改</button>
-        </div>
-        <div class="control">
-          <input type="hidden" name="next" value="{% url 'myBankSystem:accounts_info' customer_id %}">
-        </div>
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <form method="post" action="{% url 'myBankSystem:edition' user_id %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="field">
+            <label class="label">{{ form.id.label }}</label>
+            <div class="control">
+              {{ form.id }}
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">{{ form.name.label }}</label>
+            <div class="control">
+              {{ form.name }}
+            </div>
+            {% if form.name.errors %}
+            <p class="help is-danger">{{ form.name.errors }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.tel.label }}</label>
+            <div class="control">
+              {{ form.tel }}
+            </div>
+            {% if form.tel.errors %}
+            <p class="help is-danger">{{ form.tel.errors }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.email.label }}</label>
+            <div class="control">
+              {{ form.email }}
+            </div>
+            {% if form.email.errors %}
+            <p class="help is-danger">{{ form.email.errors }}</p>
+            {% endif %}
+          </div>
+          <div class="field">
+            <label class="label">{{ form.account_cnt.label }}</label>
+            <div class="control">
+              {{ form.account_cnt }}
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered">
+            <div class="control">
+              <button class="button is-primary" name="submit">确认修改</button>
+            </div>
+            <div class="control">
+              <input type="hidden" name="next" value="{% url 'myBankSystem:accounts_info' user_id %}">
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
 </section>
 {% endblock content %}

@@ -95,7 +95,7 @@ class Customer_Account(models.Model):
         return f"{self.account_id}-{self.customer.name}"
 
 # 交易记录（<u>交易记录号</u>，修改净值，交易类型，交易详情，账户号，交易时间）
-class Transaction(models.Model):
+class Transactions(models.Model):
     # 交易记录号为主码且不能为空
     transaction_id = models.AutoField(primary_key=True, null=False)
     # 修改净值
@@ -110,7 +110,7 @@ class Transaction(models.Model):
     # 交易详情
     transaction_detail = models.CharField(max_length=100, blank=True)
     # 账户号，存在外键关联，设置为级联删除
-    account = models.ForeignKey(Customer_Account, on_delete=models.CASCADE, related_name='Transaction')
+    account = models.ForeignKey(Customer_Account, on_delete=models.CASCADE, related_name='Transactions')
     # 交易时间
     transaction_date = models.DateTimeField(auto_now_add=True)
 

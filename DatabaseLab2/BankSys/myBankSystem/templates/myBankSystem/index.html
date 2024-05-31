@@ -12,7 +12,7 @@
             background-color: #f5f5f5;
         }
         .hero {
-            background-image: linear-gradient(to bottom, #6a1100, #87CEFA);
+            background-image: linear-gradient(to right, #6a11cb, #2575fc);
             color: white;
         }
     </style> 
@@ -25,8 +25,9 @@
                     <h1 class="title is-1">欢迎来到科大银行</h1>
                     {%if user.is_authenticated%}
                     <p> 您已经登录，欢迎回来！</p>
-                    {% else %}  
-                    <a class="button is-primary is-large" href="{% url 'myBankSystem:register' %}">注册</a>
+                    {% else %}
+                    {% comment %} <a class="button is-primary is-large" href="{% url 'myBankSystem:register' %}">注册</a>
+                    {% endcomment %}
                     <p> 您还没有登录，请先登录！</p>
                     {% endif %}
                 </div>
