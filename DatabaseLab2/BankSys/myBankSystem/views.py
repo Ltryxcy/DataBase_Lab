@@ -238,18 +238,18 @@ def log_out(request):
 
 # 创建账户，要求处于登录状态
 @login_required
-def create_account(request, customer_id, branch_name):
-    user = Bank_Customer.objects.get(user_id=customer_id)
+def create_account(request, user_id, branch_name):
+    user = get_object_or_404(Bank_Customer, user_id=user_id)
+    branch = get_object_or_404(Bank_Branch, branch_name=branch_name)
     # 判断是否为当前用户
-    if request.user.id != customer_id:
+    if request.user.id != user_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})  
     # 处理POST请求，创建账户
     if request.method == 'POST':
-        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch_name}, data=request.POST)
-        branch = Bank_Branch.objects.get(branch_name=branch_name)
+        form = Customer_Accounts_Form(request.POST)
         #  判断表单是否有效
-        if account_form.is_valid():
-            account_money = account_form.cleaned_data['account_money']
+        if form.is_valid():
+            account_money = form.cleaned_data['account_money']
             account = Customer_Account.objects.create(customer=user, branch=branch, account_money=account_money)
             account.save()
             # 实现 trigger
@@ -258,11 +258,11 @@ def create_account(request, customer_id, branch_name):
             # 生成账单
             transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
             transaction.save()
-            return redirect('myBankSystem:accounts', customer_id=customer_id)
+            return redirect('myBankSystem:accounts_info', user_id=user_id)
     else:
-        account_form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch})
+        form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch})
         
-    context = {'form': account_form}
+    context = {'form': form}
     return render(request, 'myBankSystem/create_account.html', context)
 
 #  显示当前客户名下的账户信息，需要登录状态

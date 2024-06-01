@@ -1,53 +1,54 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>支行管理</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
-</head>
-<body>
-    <section class="section">
-        <div class="container">
-            <h1 class="title has-text-centered">支行信息管理</h1>
+{% extends "myBankSystem/base.html" %}
 
-            <div class="columns is-multiline">
-                {% for branch in branches %}
-                    <div class="column is-one-third">
-                        <div class="card">
-                            <div class="card-content">
-                                <p class="subtitle">支行名称： {{ branch.branch_name }}</p>
-                                <p>所在城市： {{ branch.branch_city }}</p>
-                                <p>支行电话： {{ branch.branch_tel }}</p>
-                                <p>支行负责人： {{ branch.branch_manager }}</p>
+{%block page_header%} 支行信息管理 {% endblock%}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+            {% for branch in branches %}
+                <div class="column is-one-third">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                {{ branch.branch_name }}
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                                <p>所在城市: {{ branch.branch_city }}</p>
+                                <p>支行电话: {{ branch.branch_tel }}</p>
+                                <p>支行负责人：{{branch.branch_manager}}</p>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-
-            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                {% if branches.has_previous %}
-                    <a class="pagination-previous" href="?page=1">&laquo; 1</a>
-                    <a class="pagination-previous" href="?page={{ branches.previous_page_number }}">前一页</a>
-                {% endif %}
-                <ul class="pagination-list">
-                    <li>
-                        <a class="pagination-link is-current">{{ branches.number }}</a>
-                    </li>
-                </ul>
-                {% if branches.has_next %}
-                    <a class="pagination-next" href="?page={{ branches.next_page_number }}">后一页</a>
-                    <a class="pagination-next" href="?page={{ branches.paginator.num_pages }}">{{ branches.paginator.num_pages }} &raquo;</a>
-                {% endif %}
-            </nav>
+                </div>
+            {% endfor %}
         </div>
-    </section>
 
-    {% if messages %}
-    <script>
-        {% for msg in messages %}
-            alert('{{ msg.message }}');
-        {% endfor %}
-    </script>
-    {% endif %}
-</body>
-</html>
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if branches.has_previous %}
+                <a class="pagination-previous" href="?page={{ branches.previous_page_number }}">上一页</a>
+            {% else %}
+                <a class="pagination-previous" disabled>上一页</a>
+            {% endif %}
+
+            {% if branches.has_next %}
+                <a class="pagination-next" href="?page={{ branches.next_page_number }}">下一页</a>
+            {% else %}
+                <a class="pagination-next" disabled>下一页</a>
+            {% endif %}
+
+            <ul class="pagination-list">
+                {% for num in branches.paginator.page_range %}
+                    {% if branches.number == num %}
+                        <li><a class="pagination-link is-current">{{ num }}</a></li>
+                    {% else %}
+                        <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</section>
+{% endblock content %}
