@@ -280,7 +280,7 @@
                                     <span class="icon">
                                         <i class="fas fa-credit-card"></i>
                                     </span>
-                                    <span>客户信息</span>
+                                    <span>个人信息</span>
                                 </a>
                                 <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
                                     <span class="icon">
@@ -294,12 +294,17 @@
                                     </span>
                                     <span>修改密码</span>
                                 </a>
-                                {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:create_account' user_id=user.id branch_name=branch.branch_name %}">
-                                    <span class="icon">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </span>
-                                    <span>创建账户</span>
-                                </a>   {% endcomment %}
+                                <a class="navbar-item" href="{% url 'myBankSystem:create_account' user.id %}">
+                                  <span class="icon">
+                                    <i class="fas fa-plus-circle"></i>
+                                  </span>
+                                  <span>创建账户</span>
+                                </a>
+                                <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
+                                  <span class="icon">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                  </span>
+                                  <span>账户信息</span>
                                 {% endif %}
                                 <hr class="navbar-divider">
                                 <form method="post" action="{% url 'myBankSystem:logout' %}" style="display:inline;">
@@ -335,13 +340,15 @@
     <section class="hero is-medium">
         <div class="hero-body">
             <p class="title has-text-centered">
-                {% block page_header %}{% endblock page_header %}
+                {% block page_header %}
+                {% endblock page_header %}
             </p>
         </div>
     </section>
     <section class="section main-content">
         <div class="container">
-            {% block content %}{% endblock content %}
+            {% block content %}
+            {% endblock content %}
         </div>
     </section>
     <footer class="footer">

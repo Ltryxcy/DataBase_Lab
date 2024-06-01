@@ -40,20 +40,31 @@ class BankCustomer_EditForm(forms.ModelForm):
         
 #  账户表单，包含账户号，账户类型，开户时间，余额，所属支行，所属客户
 class Customer_Accounts_Form(forms.ModelForm):
-    customer = forms.ModelChoiceField(label='所属客户', queryset=Bank_Customer.objects.all(), disabled=True)
-    branches = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all(), disabled=True)
+    # customer = forms.ModelChoiceField(label='所属客户', queryset=Bank_Customer.objects.all(), disabled=True)
+    customer = forms.ModelChoiceField(
+        label='所属客户', 
+        queryset=Bank_Customer.objects.none(),
+        disabled=True)
+    branches = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all())
     account_money = forms.FloatField(label='余额', min_value=0.0)
     
-    class meta:
+    class Meta:
         model = Customer_Account
         fields = ('customer', 'branches', 'account_money')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set the customer field to disabled and add the required attribute
+        self.fields['customer'].disabled = False
+        self.fields['customer'].required = True
+        self.fields['branches'].required = True
+        self.fields['account_money'].required = True
 
 #  账户转账表单，包含转出账户，转入账户，转账金额
 class Accounts_Trade_Form(forms.ModelForm):
     src_account = forms.ModelChoiceField(label='转出账户', queryset=Customer_Account.objects.all(), disabled=True)
     target_account = forms.ModelChoiceField(label='转入账户', queryset=Customer_Account.objects.all())
     trade_money = forms.FloatField(label='转账数额', min_value=0.0)
-    class meta:
+    class Meta:
         model = Customer_Account
         fields = ('src_account', 'target_account', 'trade_money')
     

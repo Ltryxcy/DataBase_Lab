@@ -1,6 +1,5 @@
 <!-- templates/myBankSystem/customers_info.html -->
 {% extends "myBankSystem/base.html" %}
-{% load bootstrap4 %}
 
 {% block title %}客户信息 - 科大银行{% endblock %}
 
@@ -24,7 +23,7 @@
                         <p>身份证号码：{{ customer.id }}</p>
                         <p>电话：{{ customer.tel }}</p>
                         <p>邮箱：{{ customer.email }}</p>
-                        <p>账户数量：{{ customer.account_cnt }}</p>
+                        <p>账户数量：{{ customer.accounts_cnt }}</p>
                     </div>
                 </div>
                 <footer class="card-footer">

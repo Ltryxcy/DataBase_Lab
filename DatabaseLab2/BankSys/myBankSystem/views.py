@@ -11,7 +11,8 @@ from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustom
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
-
+import logging
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 def index(request):
@@ -237,33 +238,68 @@ def log_out(request):
     return render(request, 'myBankSystem/logout.html')
 
 # 创建账户，要求处于登录状态
+# def create_account(request, user_id):
+#     if request.user.is_authenticated:
+#         user = get_object_or_404(Bank_Customer, user_id=user_id)
+#         if request.user.id != user_id:
+#             return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})
+#         if request.method != 'POST':
+#             form = Customer_Accounts_Form(initial={'customer': user})
+#             form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
+#         else:
+#             form = Customer_Accounts_Form(request.POST)
+#             form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
+#             if form.is_valid():
+#                 account_money = form.cleaned_data['account_money']
+#                 branch = form.cleaned_data['branches']
+#                 account = Customer_Account.objects.create(customer=user,branch=branch, money=account_money)
+#                 account.save()
+#                 # trigger
+#                 user.accounts_cnt = user.accounts_cnt + 1
+#                 user.save()
+#                 transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
+#                 transaction.save()
+#                 messages.success(request, '账户创建成功')
+#                 return redirect('myBankSystem:accounts_info', user_id=user.id)
+#             else:
+#                 logger.error("Form is not valid:%s",form.errors)
+        
+#         context = {'form': form, 'user': user}
+#         return render(request, 'myBankSystem/create_account.html', context)
+#     else:
+#         return redirect('myBankSystem:login')
 @login_required
-def create_account(request, user_id, branch_name):
+def create_account(request, user_id):
+    logger.info(f"User {request.user.id} is trying to create an account for user_id {user_id}")
     user = get_object_or_404(Bank_Customer, user_id=user_id)
-    branch = get_object_or_404(Bank_Branch, branch_name=branch_name)
-    # 判断是否为当前用户
+
     if request.user.id != user_id:
-        return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})  
-    # 处理POST请求，创建账户
+        logger.warning(f"User {request.user.id} tried to create an account for another user {user_id}")
+        return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})
+
     if request.method == 'POST':
         form = Customer_Accounts_Form(request.POST)
-        #  判断表单是否有效
+        form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
         if form.is_valid():
             account_money = form.cleaned_data['account_money']
-            account = Customer_Account.objects.create(customer=user, branch=branch, account_money=account_money)
+            branch = form.cleaned_data['branches']
+            account = Customer_Account.objects.create(customer=user, branch=branch, money=account_money)
             account.save()
-            # 实现 trigger
-            user.account_cnt = user.account_cnt + 1
+            user.accounts_cnt += 1
             user.save()
-            # 生成账单
             transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
             transaction.save()
-            return redirect('myBankSystem:accounts_info', user_id=user_id)
+            messages.success(request, '账户创建成功')
+            return redirect('myBankSystem:accounts_info', user_id=user.id)
+        else:
+            logger.error("Form is not valid: %s", form.errors)
     else:
-        form = Customer_Accounts_Form(initial={'customer': user, 'branches': branch})
-        
-    context = {'form': form}
+        form = Customer_Accounts_Form(initial={'customer': user})
+        form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
+    
+    context = {'form': form, 'user': user}
     return render(request, 'myBankSystem/create_account.html', context)
+
 
 #  显示当前客户名下的账户信息，需要登录状态
 @login_required

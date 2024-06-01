@@ -6,7 +6,7 @@
 {% block page_header %}客户信息{% endblock %}
 
 {% block content %}
-<h2 class="title">客户信息</h2>
+<h2 class="title">账户信息</h2>
 <p>姓名：{{ account_user.name }}</p>
 <p>身份证号码：{{ account_user.id }}</p>
 <p>电话：{{ account_user.tel }}</p>
@@ -18,7 +18,7 @@
     <div class="card">
         <header class="card-header">
             <p class="card-header-title">
-                卡号：{{ account.account_id }}
+                账户号：{{ account.account_id }}
             </p>
             <a href="{% url 'accounts:delete_account' account.account_id %}" class="card-header-icon" aria-label="删除账户">
                 <span class="icon">

@@ -1,0 +1,38 @@
+{% extends "myBankSystem/base.html" %}
+{% block title %}创建账户 - 科大银行{% endblock %}
+{% block page_header %}创建账户{% endblock %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box">
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">所属客户</label>
+                    <div class="control">
+                        {{ form.customer }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">选择支行</label>
+                    <div class="control">
+                        {{ form.branches }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">余额</label>
+                    <div class="control">
+                        {{ form.account_money }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">创建账户</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

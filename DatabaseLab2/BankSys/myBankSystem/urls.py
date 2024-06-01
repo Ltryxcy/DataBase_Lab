@@ -17,7 +17,7 @@ urlpatterns = [
     path('customers_info/', views.fetch_customers_information, name='customers_info'),
     path('delete_customer/<int:user_id>/', views.delete_customer, name='delete_customer'),
     # 账户视图的URL
-    path('create_account/<int:user_id>/<str:branch_name>/', views.create_account, name='create_account'),
+    path('create_account/<int:user_id>/', views.create_account, name='create_account'),
     path('accounts_info/<int:user_id>/', views.accounts_info, name='accounts_info'),
     path('delete_account/<int:account_id>/', views.delete_account, name='delete_account'),
     # path('trade/<int:account_id>/', views.trade, name='trade'),
