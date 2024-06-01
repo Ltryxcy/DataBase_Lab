@@ -33,11 +33,9 @@ class BankCustomer_EditForm(forms.ModelForm):
     tel = forms.CharField(label='电话号码', strip=True, error_messages={'required': '电话号码不能为空。'})
     # 邮箱可以为空
     email = forms.EmailField(label='邮箱', required=False)
-    # 名下账户数不能修改
-    account_cnt = forms.IntegerField(label='名下账户数', disabled=True)
     class Meta:
         model = Bank_Customer
-        fields = ('id', 'name', 'tel', 'email', 'account_cnt')
+        fields = ('id', 'name', 'tel', 'email')
         
         
 #  账户表单，包含账户号，账户类型，开户时间，余额，所属支行，所属客户

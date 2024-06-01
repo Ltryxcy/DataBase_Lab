@@ -152,7 +152,7 @@ def change_password(request, user_id):
             # 更新session，修改完密码后，用户需要重新登录
             update_session_auth_hash(request, form.user)
             # 返回主页
-            return redirect('myBankSystem:login')
+            return redirect('myBankSystem:index')
     context = {'form': form}
     return render(request, 'myBankSystem/change_password.html', context)
 
@@ -166,20 +166,22 @@ def edit_customer(request, user_id):
     if customer != request.user and not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '没有权限修改信息'})
     if request.method == 'POST':
-        editform = BankCustomer_EditForm(request.POST, instance=information)
-        if editform.is_valid():
-            # information.name = editform.cleaned_data['name']
-            # information.tel = editform.cleaned_data['tel']
-            # information.email = editform.cleaned_data['email']
+        form = BankCustomer_EditForm(instance=information, data=request.POST)
+        if form.is_valid():
+            information.name = form.cleaned_data['name']
+            information.tel = form.cleaned_data['tel']
+            information.email = form.cleaned_data['email']
+            # form.save()
             information.save()
             # 返回主页
             messages.success(request, '信息已经成功更新')
-            return redirect('myBankSystem:index', user_id=user_id)
+            return redirect('myBankSystem:index')
         else:
+            print(form.errors)
             return render(request, 'myBankSystem/error.html', {'error': '输入不合法'})
     else:
-        editform = BankCustomer_EditForm(instance=information)
-    context = {'form': editform, 'user_id': user_id}
+        form = BankCustomer_EditForm(instance=information)
+    context = {'form': form, 'user_id': user_id}
     return render(request, 'myBankSystem/edition.html', context)
 
 #  获取用户信息，需要管理员权限
