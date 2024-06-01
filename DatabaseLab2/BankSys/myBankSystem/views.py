@@ -290,7 +290,7 @@ def create_account(request, user_id):
             transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
             transaction.save()
             messages.success(request, '账户创建成功')
-            return redirect('myBankSystem:accounts_info', user_id=user.id)
+            return redirect('myBankSystem:index')
         else:
             logger.error("Form is not valid: %s", form.errors)
     else:
