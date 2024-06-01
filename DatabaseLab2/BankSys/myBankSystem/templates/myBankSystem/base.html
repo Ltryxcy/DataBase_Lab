@@ -263,6 +263,12 @@
                                     </span>
                                     <span>系统后台</span>
                                 </a>
+                                <a class="navbar-item" href="{% url 'myBankSystem:customers_info' %}">
+                                  <span class="icon">
+                                    <i class="fas fa-users"></i>
+                                  </span>
+                                  <span>客户信息</span> 
+                                </a> 
                                 {% else %}
                                 <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
                                     <span class="icon">

@@ -2,8 +2,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account, Transactions
-from django.core.paginator import Paginator
+from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account, Transactions, Loan
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
@@ -187,20 +187,47 @@ def edit_customer(request, user_id):
 #  获取用户信息，需要管理员权限
 @login_required
 def fetch_customers_information(request):
-    user_name = None
-    # 如果当前用户是超级用户
+    # 检查是否是超级用户
     if request.user.is_superuser:
-        user_name = request.user.username
-    if user_name != None:
         # 获取所有用户信息
         customers_lists = Bank_Customer.objects.all()
         # 分页，每页显示6条数据
         paged = Paginator(customers_lists, 6)
         # 获取当前页码
-        customers_page = paged.get_page(request.GET.get('page'))
+        page_number = request.GET.get('page')
+        try:
+            customers_page = paged.page(page_number)
+        except PageNotAnInteger:
+            customers_page = paged.page(1)
+        except EmptyPage:
+            customers_page = paged.page(paged.num_pages)
+        
         context = {'customers': customers_page}
+        # 返回用户信息界面
         return render(request, 'myBankSystem/customers_info.html', context)
+    else:
+        # 返回错误页面，错误信息：没有权限查看
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看'})
 
+#  TODO:删除用户，需要管理员权限
+@login_required
+def delete_customer(request, user_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限删除用户'})
+    customer = User.objects.get(id=user_id)
+    # 检查客户是否有未还完的贷款或账户
+    loans_exist = Loan.objects.filter(customer_id=user_id).exists()
+    accounts_exist = Customer_Account.objects.filter(customer_id=user_id).exists()
+    if loans_exist or accounts_exist:
+        return render(request, 'myBankSystem/error.html', {'error': '用户名下有未结贷款或账户，无法删除用户'})
+    if request.method == 'POST':
+        customer.delete()
+        messages.success(request, '用户已删除')
+        return redirect('myBankSystem:customers_info')
+    context = {'customer', customer}
+    return render(request, 'myBankSystem/confirm_delete.html', context)
+    
+    
 #  退出登录状态
 @login_required
 def log_out(request):

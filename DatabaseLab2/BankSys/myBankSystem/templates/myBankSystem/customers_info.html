@@ -1,0 +1,56 @@
+<!-- templates/myBankSystem/customers_info.html -->
+{% extends "myBankSystem/base.html" %}
+{% load bootstrap4 %}
+
+{% block title %}客户信息 - 科大银行{% endblock %}
+
+{% block page_header %}
+  <h2 class="title">客户信息</h2>
+{% endblock page_header %}
+
+{% block content %}
+<div class="container">
+    <div class="columns is-multiline">
+        {% for customer in customers %}
+        <div class="column is-one-third">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        客户姓名：{{ customer.name }}
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        <p>身份证号码：{{ customer.id }}</p>
+                        <p>电话：{{ customer.tel }}</p>
+                        <p>邮箱：{{ customer.email }}</p>
+                        <p>账户数量：{{ customer.account_cnt }}</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="{% url 'myBankSystem:edition' customer.user.id %}" class="card-footer-item">修改信息</a>
+                    <form action="{% url 'myBankSystem:delete_customer' customer.user.id %}" method="post" class="card-footer-item" onsubmit="return confirm('确定要删除此客户吗？');">
+                        {% csrf_token %}
+                        <button type="submit" class="button is-danger is-light">删除客户</button>
+                    </form>
+                </footer>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        {% if customers.has_previous %}
+        <a class="pagination-previous" href="?page=1">第一页</a>
+        <a class="pagination-previous" href="?page={{ customers.previous_page_number }}">上一页</a>
+        {% endif %}
+
+        <a class="pagination-link is-current">{{ customers.number }}</a>
+
+        {% if customers.has_next %}
+        <a class="pagination-next" href="?page={{ customers.next_page_number }}">下一页</a>
+        <a class="pagination-next" href="?page={{ customers.paginator.num_pages }}">最后一页</a>
+        {% endif %}
+    </nav>
+</div>
+{% endblock %}

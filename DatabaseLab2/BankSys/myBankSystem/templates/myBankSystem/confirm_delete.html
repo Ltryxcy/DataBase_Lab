@@ -1,0 +1,22 @@
+<!-- templates/myBankSystem/confirm_delete.html -->
+{% extends "myBankSystem/base.html" %}
+
+{% block title %}确认删除 - 科大银行{% endblock %}
+
+{% block page_header %}
+  <h2 class="title">确认删除</h2>
+{% endblock page_header %}
+
+{% block content %}
+<div class="container">
+    <h3 class="subtitle">确定要删除此客户吗？</h3>
+    <p>客户姓名：{{ customer.name }}</p>
+    <p>身份证号码：{{ customer.id }}</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="button is-danger">确认删除</button>
+        <a href="{% url 'myBankSystem:customers_info' %}" class="button">取消</a>
+    </form>
+</div>
+{% endblock %}
