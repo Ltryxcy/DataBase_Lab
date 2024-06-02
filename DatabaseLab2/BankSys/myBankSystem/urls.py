@@ -14,6 +14,7 @@ urlpatterns = [
     path('register/', views.bank_customer_register, name='register'),
     path('change_password/<int:user_id>/', views.change_password, name='change_password'),
     path('edition/<int:user_id>/', views.edit_customer, name='edition'),
+    path('user_info/<int:user_id>/', views.user_info, name='user_info'),
     path('customers_info/', views.fetch_customers_information, name='customers_info'),
     path('delete_customer/<int:user_id>/', views.delete_customer, name='delete_customer'),
     # 账户视图的URL

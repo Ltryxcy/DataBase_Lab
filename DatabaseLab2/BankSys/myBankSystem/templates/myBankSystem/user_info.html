@@ -1,0 +1,18 @@
+{% extends "myBankSystem/base.html" %}
+
+
+{% block page_header %}个人信息{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box has-text-left">
+            <p><strong>姓名：</strong>{{ customer.name }}</p>
+            <p><strong>身份证号码：</strong>{{ customer.id }}</p>
+            <p><strong>电话：</strong>{{ customer.tel }}</p>
+            <p><strong>邮箱：</strong>{{ customer.email }}</p>
+            <p><strong>账户数量：</strong>{{ customer.accounts_cnt }}</p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

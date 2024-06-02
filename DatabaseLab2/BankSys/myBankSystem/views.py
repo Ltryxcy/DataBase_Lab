@@ -126,6 +126,8 @@ def bank_customer_register(request):
             login(request, user) # 登录
             return redirect('myBankSystem:index')
         else:
+            print(creation_form.errors)
+            print(bank_customer_registerform.errors)
             return render(request,'myBankSystem/error.html', {'error': '输入不合法或该用户名/身份证号码已注册'})
     else: # 用户访问注册页面
         bank_customer_registerform = BankCustomer_RegisterForm()
@@ -184,6 +186,20 @@ def edit_customer(request, user_id):
         form = BankCustomer_EditForm(instance=information)
     context = {'form': form, 'user_id': user_id}
     return render(request, 'myBankSystem/edition.html', context)
+
+# 查看用户个人信息
+@login_required
+def user_info(request, user_id):
+    # 获取用户
+    user = get_object_or_404(User, id=user_id)
+    # 如果用户不是当前用户，且当前用户不是超级用户，没有权限查看信息
+    if user != request.user and not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看信息'})
+    # 获取用户信息
+    customer = Bank_Customer.objects.get(user_id=user_id)
+    context = {'customer': customer}
+    # 返回用户信息界面
+    return render(request, 'myBankSystem/user_info.html', context)
 
 #  获取用户信息，需要管理员权限
 @login_required
@@ -283,7 +299,7 @@ def create_account(request, user_id):
         if form.is_valid():
             account_money = form.cleaned_data['account_money']
             branch = form.cleaned_data['branches']
-            account = Customer_Account.objects.create(customer=user, branch=branch, money=account_money)
+            account = Customer_Account.objects.create(user=user, branch=branch, money=account_money)
             account.save()
             user.accounts_cnt += 1
             user.save()
@@ -309,9 +325,11 @@ def accounts_info(request, user_id):
     if request.user.id != user_id and not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '无法查看他人账户'})
     # 获取当前用户的账户信息
-    account_list = Customer_Account.objects.filter(user_id=account_user.id)
+    account_list = Customer_Account.objects.filter(user_id=user_id)
+    print(f'account_list: {account_list.count()}')
     # 分页，每页显示6条数据
     paged = Paginator(account_list, 6)
+    print(f'paged: {paged}')
     account_page = paged.get_page(request.GET.get('page'))
     context = {'accounts': account_page, 'account_user': account_user}
     return render(request, 'myBankSystem/accounts_info.html', context)

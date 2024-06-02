@@ -276,7 +276,7 @@
                                   <span>贷款信息</span>
                                 </a> {% endcomment %}
                                 {% else %} <!-- 用户视角 -->
-                                <a class="navbar-item" href="{% url 'myBankSystem:accounts_info' user.id %}">
+                                <a class="navbar-item" href="{% url 'myBankSystem:user_info' user.id %}">
                                     <span class="icon">
                                         <i class="fas fa-credit-card"></i>
                                     </span>

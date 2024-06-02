@@ -85,14 +85,12 @@ class Customer_Account(models.Model):
     money = models.FloatField(default=0.0, validators=[MinValueValidator(0.0)])
     # 开户时间
     create_date = models.DateTimeField(auto_now_add=True)
-    # 身份证号，存在外键关联，设置为级联删除
-    customer = models.ForeignKey(Bank_Customer, on_delete=models.CASCADE, related_name='CustomerAccount')
     # 支行名称，存在外键关联，设置为级联删除
     branch = models.ForeignKey(Bank_Branch, on_delete=models.CASCADE, related_name='BranchAccount')
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='CustomerAccount', null=True)
+    user = models.ForeignKey(Bank_Customer, on_delete=models.CASCADE, related_name='CustomerAccount',default='0')
     
     def __str__(self):
-        return f"{self.account_id}-{self.customer.name}"
+        return f"{self.account_id}-{self.user.name}"
 
 # 交易记录（<u>交易记录号</u>，修改净值，交易类型，交易详情，账户号，交易时间）
 class Transactions(models.Model):

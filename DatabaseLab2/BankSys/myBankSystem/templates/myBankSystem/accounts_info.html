@@ -1,17 +1,11 @@
 <!-- templates/myBankSystem/account_info.html -->
 {% extends "myBankSystem/base.html" %}
 
-{% block title %}客户信息 - 科大银行{% endblock %}
 
-{% block page_header %}客户信息{% endblock %}
+{% comment %}
+{% block page_header %}账户信息{% endblock %}
 
 {% block content %}
-<h2 class="title">账户信息</h2>
-<p>姓名：{{ account_user.name }}</p>
-<p>身份证号码：{{ account_user.id }}</p>
-<p>电话：{{ account_user.tel }}</p>
-<p>邮箱：{{ account_user.email }}</p>
-<p>账户数量：{{ account_user.accounts_cnt }}</p>
 
 <div class="container">
     {% for account in accounts %}
@@ -28,7 +22,7 @@
         </header>
         <div class="card-content">
             <div class="content">
-                <p>持有人：{{ account.user.name }}</p>
+                <p>持有人：{{ account_user.name }}</p>
                 <p>余额：{{ account.money }}</p>
                 <p>开户银行名称：{{ account.branch.name }}</p>
                 <p>开户时间：{{ account.create_date }}</p>
@@ -38,6 +32,56 @@
             <a href="{% url 'accounts:transfer' account.account_id %}" class="card-footer-item">转账</a>
             <a href="{% url 'bills:create_bill' account.account_id %}" class="card-footer-item">创建账单</a>
             <a href="{% url 'bills:bills' account.account_id %}" class="card-footer-item">账单详情</a>
+        </footer>
+    </div>
+    {% endfor %}
+</div>
+
+<nav class="pagination" role="navigation" aria-label="pagination">
+    {% if accounts.has_previous %}
+    <a class="pagination-previous" href="?page=1">第一页</a>
+    <a class="pagination-previous" href="?page={{ accounts.previous_page_number }}">上一页</a>
+    {% endif %}
+
+    <a class="pagination-link is-current">{{ accounts.number }}</a>
+
+    {% if accounts.has_next %}
+    <a class="pagination-next" href="?page={{ accounts.next_page_number }}">下一页</a>
+    <a class="pagination-next" href="?page={{ accounts.paginator.num_pages }}">最后一页</a>
+    {% endif %}
+</nav>
+{% endblock %} {% endcomment %}
+
+{% block title %}账户信息 - 科大银行{% endblock %}
+
+{% block page_header %}账户信息{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for account in accounts %}
+    <div class="card">
+        <header class="card-header">
+            <p class="card-header-title">
+                账户号：{{ account.account_id }}
+            </p>
+            <a href="{% url 'accounts:delete_account' account.id %}" class="card-header-icon" aria-label="删除账户">
+                <span class="icon">
+                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                </span>
+            </a>
+        </header>
+        <div class="card-content">
+            <div class="content">
+                <p>持有人：{{ account.customer.name }}</p>
+                <p>余额：{{ account.money }}</p>
+                <p>开户银行名称：{{ account.branch.name }}</p>
+                <p>开户时间：{{ account.create_date }}</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{% url 'accounts:transfer' account.id %}" class="card-footer-item">转账</a>
+            <a href="{% url 'bills:create_bill' account.id %}" class="card-footer-item">创建账单</a>
+            <a href="{% url 'bills:bills' account.id %}" class="card-footer-item">账单详情</a>
         </footer>
     </div>
     {% endfor %}
