@@ -288,7 +288,7 @@ def log_out(request):
 def create_account(request, user_id):
     logger.info(f"User {request.user.id} is trying to create an account for user_id {user_id}")
     user = get_object_or_404(Bank_Customer, user_id=user_id)
-
+    login(request, user.user)
     if request.user.id != user_id:
         logger.warning(f"User {request.user.id} tried to create an account for another user {user_id}")
         return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})
@@ -306,7 +306,7 @@ def create_account(request, user_id):
             transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
             transaction.save()
             messages.success(request, '账户创建成功')
-            return redirect('myBankSystem:index')
+            return redirect('myBankSystem:accounts_info', user_id=user_id)
         else:
             logger.error("Form is not valid: %s", form.errors)
     else:
@@ -318,27 +318,46 @@ def create_account(request, user_id):
 
 
 #  显示当前客户名下的账户信息，需要登录状态
+# @login_required
+# def accounts_info(request, user_id):
+#     print(f'user_id: {user_id}')
+#     account_user = get_object_or_404(Bank_Customer, user_id=user_id)
+#     if request.user.id != user_id and not request.user.is_superuser:
+#         return render(request, 'myBankSystem/error.html', {'error': '无法查看他人账户'})
+#     # 获取当前用户的账户信息
+#     account_list = Customer_Account.objects.filter(user_id=user_id)
+#     print(f'account_list: {account_list.count()}')
+#     # 分页，每页显示6条数据
+#     paged = Paginator(account_list, 6)
+#     print(f'paged: {paged}')
+#     account_page = paged.get_page(request.GET.get('page'))
+#     context = {'accounts': account_page, 'account_user': account_user}
+#     return render(request, 'myBankSystem/accounts_info.html', context)
 @login_required
 def accounts_info(request, user_id):
     print(f'user_id: {user_id}')
     account_user = get_object_or_404(Bank_Customer, user_id=user_id)
+    print(f'account_user.id: {account_user.id}')
     if request.user.id != user_id and not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '无法查看他人账户'})
     # 获取当前用户的账户信息
-    account_list = Customer_Account.objects.filter(user_id=user_id)
+    account_list = Customer_Account.objects.filter(user_id=account_user.id)
     print(f'account_list: {account_list.count()}')
-    # 分页，每页显示6条数据
-    paged = Paginator(account_list, 6)
+    # 分页，每页显示3条数据
+    paged = Paginator(account_list, 3)
     print(f'paged: {paged}')
     account_page = paged.get_page(request.GET.get('page'))
     context = {'accounts': account_page, 'account_user': account_user}
     return render(request, 'myBankSystem/accounts_info.html', context)
 
+
 # 删除账户，需要登录状态
 @login_required
 def delete_account(request, account_id):
+    # 获取当前账户
     account = Customer_Account.objects.get(account_id=account_id)
-    user = Bank_Customer.objects.get(id=account.customer_id)
+    #  获取账户的拥有者
+    user = Bank_Customer.objects.get(user_id=account.user.user_id)
     # 判断是否为账户的拥有者
     if request.user.id != user.user_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法删除他人账户'})
@@ -349,7 +368,7 @@ def delete_account(request, account_id):
     user.save()
     account.delete()
     
-    return redirect('myBankSystem:account_info', customer_id=user.id)
+    return redirect('myBankSystem:accounts_info', user_id=user.user_id)
 
 # 转账，需要登录状态
 @login_required
