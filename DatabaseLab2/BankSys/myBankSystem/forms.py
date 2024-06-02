@@ -79,4 +79,9 @@ class Account_Transactions_Form(forms.ModelForm):
     class Meta:
         model = Transactions
         fields = ('account', 'trade_money', 'trade_type', 'trade_detail')
-    
+        
+#  创建支行表单，包含支行名称，支行地址，负责人，联系电话
+class Branch_Creation_Form(forms.ModelForm):
+    class Meta:
+        model = Bank_Branch
+        fields = ['branch_name', 'branch_city', 'branch_tel', 'branch_manager']    

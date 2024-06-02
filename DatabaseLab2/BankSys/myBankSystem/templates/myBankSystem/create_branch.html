@@ -1,0 +1,63 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block title %}创建支行{% endblock title %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title has-text-centered">创建支行</h1> <!-- 标题居中 -->
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">支行名称</label>
+                        <div class="control">
+                            <input class="input" type="text" name="branch_name" value="{{ form.branch_name.value|default_if_none:'' }}">
+                            {% if form.branch_name.errors %}
+                                <p class="help is-danger">{{ form.branch_name.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">支行所在城市</label>
+                        <div class="control">
+                            <input class="input" type="text" name="branch_city" value="{{ form.branch_city.value|default_if_none:'' }}">
+                            {% if form.branch_city.errors %}
+                                <p class="help is-danger">{{ form.branch_city.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">支行电话</label>
+                        <div class="control">
+                            <input class="input" type="text" name="branch_tel" value="{{ form.branch_tel.value|default_if_none:'' }}">
+                            {% if form.branch_tel.errors %}
+                                <p class="help is-danger">{{ form.branch_tel.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">支行负责人</label>
+                        <div class="control">
+                            <input class="input" type="text" name="branch_manager" value="{{ form.branch_manager.value|default_if_none:'' }}">
+                            {% if form.branch_manager.errors %}
+                                <p class="help is-danger">{{ form.branch_manager.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">创建支行</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

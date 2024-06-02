@@ -22,5 +22,8 @@ urlpatterns = [
     path('accounts_info/<int:user_id>/', views.accounts_info, name='accounts_info'),
     path('delete_account/<int:account_id>/', views.delete_account, name='delete_account'),
     path('trade/<int:account_id>/', views.trade, name='trade'),
-    
+    # 交易记录视图的URL
+    path('transactions_info/<int:account_id>/', views.transactions_info, name='transactions_info'),
+    # 支行视图的URL
+    path('create_branch/', views.create_branch, name='create_branch'),
 ]

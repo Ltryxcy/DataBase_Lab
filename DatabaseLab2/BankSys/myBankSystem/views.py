@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
-from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form
+from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -301,59 +301,6 @@ def delete_account(request, account_id):
     return redirect('myBankSystem:accounts_info', user_id=user.user_id)
 
 # 转账，需要登录状态
-# @login_required
-# @transaction.atomic
-# def trade(request, account_id):
-#     # 交易方的账户和客户
-#     print(f'account_id: {account_id}')
-#     account = Customer_Account.objects.get(account_id=account_id)
-#     customer = Bank_Customer.objects.get(id=account.user.id)
-#     # 判断是否是账户的拥有者
-#     print(f'user_id: {customer.user_id}')
-#     if request.user.id != customer.user_id:
-#         return render(request, 'myBankSystem/error.html', {'error': '您没有此账户权限！'})
-#     if request.method == 'POST':
-#         trade_form = Accounts_Trade_Form(initial={'src_account': account}, data=request.POST)
-#         if trade_form.is_valid():
-#             money = trade_form.cleaned_data['trade_money']
-#             target_account = trade_form.cleaned_data['target_account']
-#             # 判断账户余额是否足够
-#             if account.money < money:
-#                 return render(request, 'myBankSystem/error.html', {'error': '余额不足'})
-#             # 目标账户不存在
-#             if not Customer_Account.objects.filter(account_id=target_account.account_id).exists():
-#                 return render(request, 'myBankSystem/error.html', {'error': '目标账户不存在'})
-#             # 目标账户不能是自己
-#             if target_account.account_id == account_id:
-#                 return render(request, 'myBankSystem/error.html', {'error': '不能转账给自己'})
-            
-#             try:
-#                 # 开启事务块
-#                 with transaction.atomic():
-#                     # 交易方账户扣款
-#                     account.money = account.money - money
-#                     account.save()
-#                     # 目标账户加款
-#                     target_account.money = target_account.money + money
-#                     target_account.save()
-#                     # 生成账单
-#                     transaction = Transactions.objects.create(account=account, money=money, transaction_detail='转账给'+str(target_account.account_id))
-#                     transaction.save()
-#                     transaction = Transactions.objects.create(account=target_account, money=money, transaction_detail='收到'+str(account.account_id)+'转账')
-#                     transaction.save()
-#                 return redirect('myBankSystem:accounts_info', customer_id=customer.id)
-#             except Exception as e:
-#                 # 转账失败，不需要显式的回滚
-#                 # transaction.rollback()
-#                 logger.error("Transfer failed: %s", e)
-#                 return render(request, 'myBankSystem/error.html', {'error': '转账失败'})
-#         else:
-#             logger.error("Form is not valid: %s", trade_form.errors)  
-#     else:
-#         trade_form = Accounts_Trade_Form(initial={'src_account': account})
-#     context = {'form': trade_form, 'account': account}
-#     return render(request, 'myBankSystem/trade.html', context)
-
 @login_required
 @transaction.atomic
 def trade(request, account_id):
@@ -414,9 +361,9 @@ def trade(request, account_id):
 @login_required
 def transactions_info(request, account_id):
     account = Customer_Account.objects.get(account_id=account_id)
-    customer = Bank_Customer.objects.get(id=account.customer_id)
+    customer = Bank_Customer.objects.get(id=account.user.id)
     # 判断是否是账户的拥有者
-    if request.user.id != customer.id:
+    if request.user.id != customer.user_id:
         return render(request, 'myBankSystem/error.html', {'error': '您没有此账户权限！'})
     # 获取账户的交易记录
     transactions_list = Transactions.objects.filter(account_id=account_id)
@@ -426,6 +373,7 @@ def transactions_info(request, account_id):
     context = {'transactions': transactions_page, 'account': account}
     return render(request, 'myBankSystem/transactions_info.html', context)
    
+
         
 ##  支行信息界面的视图
 def branches(request):
@@ -444,6 +392,22 @@ def branches(request):
     # 返回支行管理界面
     template = loader.get_template('myBankSystem/branches.html')
     return HttpResponse(template.render(context, request))
+
+# 创建支行，需要登录状态，管理员权限
+@login_required
+def create_branch(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限创建支行'})
+    if request.method == 'POST':
+        form = Branch_Creation_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('myBankSystem:branches')  # 假设有一个显示支行列表的视图
+    else:
+        form = Branch_Creation_Form()
+    
+    return render(request, 'myBankSystem/create_branch.html', {'form': form})
+
     
 ##  部门信息界面的视图
 def departments(request):

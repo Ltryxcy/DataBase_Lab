@@ -32,7 +32,7 @@
                         </div>
                         <footer class="card-footer">
                             <a href="{% url 'myBankSystem:trade' account.account_id %}" class="card-footer-item">转账</a>
-                            {% comment %} <a href="{% url 'myBankSystem:transaction_detail' account.account_id %}" class="card-footer-item">账单详情</a> {% endcomment %}
+                            <a href="{% url 'myBankSystem:transactions_info' account.account_id %}" class="card-footer-item">交易记录</a>
                         </footer>
                     </div>
                 </div>
