@@ -1,0 +1,45 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %}
+  <h2 class="has-text-centered">转账给其它账户</h2>
+{% endblock page_header %}
+
+{% block content %}
+<form method="post" action="{% url 'myBankSystem:trade' account.account_id %}" class="form">
+    {% csrf_token %}
+    
+    <!-- 转出账户字段 -->
+    <div class="field">
+        <label class="label">{{ form.src_account.label }}</label>
+        <div class="control">
+            <input class="input" type="text" value="{{ form.src_account.value }}" disabled>
+        </div>
+    </div>
+
+    <!-- 转入账户字段 -->
+    <div class="field">
+        <label class="label">{{ form.target_account.label }}</label>
+        <div class="control">
+            {{ form.target_account }}
+        </div>
+    </div>
+
+    <!-- 转账数额字段 -->
+    <div class="field">
+        <label class="label">{{ form.trade_money.label }}</label>
+        <div class="control">
+            {{ form.trade_money }}
+        </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-link" type="submit">转账</button>
+        </div>
+    </div>
+
+    <!-- 隐藏字段 -->
+    <input type="hidden" name="next" value="{% url 'myBankSystem:accounts_info' user.id %}">
+</form>
+{% endblock content %}

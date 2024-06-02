@@ -306,6 +306,11 @@
                                   </span>
                                   <span>账户信息</span>
                                 </a>
+                                {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:loans' user.id %}">
+                                  <span class="icon">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                  </span>
+                                  <span>贷款信息</span> {% endcomment %}
                                 {% endif %}
                                 <hr class="navbar-divider">
                                 <form method="post" action="{% url 'myBankSystem:logout' %}" style="display:inline;">

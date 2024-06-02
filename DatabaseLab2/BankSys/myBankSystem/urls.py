@@ -21,5 +21,6 @@ urlpatterns = [
     path('create_account/<int:user_id>/', views.create_account, name='create_account'),
     path('accounts_info/<int:user_id>/', views.accounts_info, name='accounts_info'),
     path('delete_account/<int:account_id>/', views.delete_account, name='delete_account'),
-    # path('trade/<int:account_id>/', views.trade, name='trade'),
+    path('trade/<int:account_id>/', views.trade, name='trade'),
+    
 ]
