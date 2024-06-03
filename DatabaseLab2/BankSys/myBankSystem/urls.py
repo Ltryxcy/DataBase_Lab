@@ -8,6 +8,7 @@ urlpatterns = [
     path('branches/', views.branches, name='branches'),
     path('departments/', views.departments, name='departments'),
     path('department_staff/<int:department_id>/', views.department_staff, name='department_staff'),
+    path('departments/create_department/', views.create_department, name='create_department'),
     # 用户视图的URL
     path('login/', views.bank_customer_login, name='login'),
     path('logout/', views.log_out, name='logout'),

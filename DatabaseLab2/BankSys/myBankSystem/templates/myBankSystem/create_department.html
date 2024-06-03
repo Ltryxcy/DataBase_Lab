@@ -1,0 +1,58 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %}
+  <h2 class="title is-2">创建部门</h2>
+{% endblock page_header %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box">
+            {% if not request.user.is_superuser %}
+                <article class="message is-danger">
+                    <div class="message-body">
+                        你没有权限创建部门。
+                    </div>
+                </article>
+            {% else %}
+                <form method="post" action="{% url 'myBankSystem:create_department' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">所属支行</label>
+                        <div class="control">
+                            {{ form.branch }}
+                            {% if form.branch.errors %}
+                                <p class="help is-danger">{{ form.branch.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">部门名称</label>
+                        <div class="control">
+                            {{ form.department_name }}
+                            {% if form.department_name.errors %}
+                                <p class="help is-danger">{{ form.department_name.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">部门经理</label>
+                        <div class="control">
+                            {{ form.department_manager }}
+                            {% if form.department_manager.errors %}
+                                <p class="help is-danger">{{ form.department_manager.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">创建</button>
+                            <button class="button is-danger" onclick="location.href='{% url 'myBankSystem:departments' %}'">取消</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

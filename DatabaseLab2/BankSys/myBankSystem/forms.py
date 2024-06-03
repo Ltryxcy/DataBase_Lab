@@ -110,3 +110,17 @@ class Staff_Edit_Form(forms.ModelForm):
     class Meta:
         model = Bank_Staff
         fields = ('staff_id', 'department', 'name', 'tel', 'photo','sex')
+        
+        
+## 部门创建表单
+class Department_Creation_Form(forms.ModelForm):
+    branch = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all())
+    department_name = forms.CharField(label='部门名称', max_length=20)
+    class Meta:
+        model = Bank_Department
+        fields = ['department_name', 'department_manager', 'branch']
+        widgets = {
+            'department_name': forms.TextInput(attrs={'class': 'input'}),
+            'department_manager': forms.TextInput(attrs={'class': 'input'}),
+            'branch': forms.HiddenInput(),
+        }

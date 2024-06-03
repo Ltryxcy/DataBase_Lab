@@ -274,6 +274,12 @@
                                     <i class="fas fa-hand-holding-usd"></i>
                                   </span>
                                   <span>贷款信息</span>
+                                {% comment %} </a>
+                                <a class="navbar-item" href="{% url 'myBankSystem:department_staff ' %}">
+                                  <span class="icon">
+                                    <i class="fas fa-university"></i>
+                                  </span>
+                                  <span>员工信息管理</span>
                                 </a> {% endcomment %}
                                 {% else %} <!-- 用户视角 -->
                                 <a class="navbar-item" href="{% url 'myBankSystem:user_info' user.id %}">

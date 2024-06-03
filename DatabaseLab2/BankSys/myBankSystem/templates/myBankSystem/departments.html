@@ -5,6 +5,13 @@
 {% block content %}
 <section class="section">
     <div class="container">
+        {% if request.user.is_superuser %}
+            <div class="columns is-multiline">
+                <div class="column is-full">
+                    <a href="{% url 'myBankSystem:create_department' %}" class="button is-primary is-pulled-right">创建部门</a>
+                </div>
+            </div>
+        {% endif %}
         <div class="columns is-multiline">
             {% for department in departments %}
                 <div class="column is-one-third">
@@ -16,6 +23,9 @@
                         </header>
                         <div class="card-content">
                             <div class="content">
+                                {%if request.user.is_superuser%}
+                                    <p>部门ID：{{ department.department_id }}</p>
+                                {%endif%}
                                 <p>所属支行: {{ department.branch.branch_name }}</p>
                                 <p>部门经理: {{ department.department_manager }}</p>
                             </div>

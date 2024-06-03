@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
-from .forms import Staff_Creation_Form, Staff_Edit_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -424,6 +424,28 @@ def departments(request):
     template = loader.get_template('myBankSystem/departments.html')
     return HttpResponse(template.render(context, request))
 
+# 创建部门，需要登录状态，管理员权限
+@login_required
+def create_department(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限创建部门'})
+    
+    # branch = Bank_Branch.objects.
+    
+    if request.method != 'POST':
+        form = Department_Creation_Form()
+    else:
+        form = Department_Creation_Form(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('myBankSystem:departments')
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+    
+    context = {'form': form}
+    return render(request, 'myBankSystem/create_department.html', context)
+    
+
 ##  部门员工的视图
 def department_staff(request, department_id):
     branch_name = None
@@ -470,3 +492,18 @@ def create_Staff(request, department_id):
             print(f'form.errors: {form.errors}')
     context = {'form': form, 'department': department}
     return render(request, 'myBankSystem/create_staff.html', context)
+
+# 员工信息展示
+@login_required
+def staff_list(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看员工信息'})
+    staff_list = Bank_Staff.objects.all()
+    paginator = Paginator(staff_list, 6)  # 每页显示6个员工
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'myBankSystem/department_staff.html', context)
+

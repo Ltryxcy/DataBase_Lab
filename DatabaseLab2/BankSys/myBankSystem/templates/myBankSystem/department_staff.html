@@ -1,0 +1,66 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %} 员工信息管理 {% endblock page_header %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        {% if request.user.is_superuser %}
+            <div class="columns is-multiline">
+                <div class="column is-full">
+                    <a href="{% url 'myBankSystem:create_staff' %}" class="button is-primary is-pulled-right">创建员工</a>
+                </div>
+            </div>
+        {% endif %}
+        <div class="columns is-multiline">
+            {% for staff in page_obj %}
+                <div class="column is-one-third">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-4by3">
+                                <img src="{{ staff.staff_photo.url }}" alt="员工照片">
+                            </figure>
+                        </div>
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                {{ staff.staff_name }}
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                                <p>性别: {{ staff.staff_sex }}</p>
+                                <p>电话: {{ staff.staff_tel }}</p>
+                                <p>部门: {{ staff.department.department_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if page_obj.has_previous %}
+                <a class="pagination-previous" href="?page={{ page_obj.previous_page_number }}">上一页</a>
+            {% else %}
+                <a class="pagination-previous" disabled>上一页</a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a class="pagination-next" href="?page={{ page_obj.next_page_number }}">下一页</a>
+            {% else %}
+                <a class="pagination-next" disabled>下一页</a>
+            {% endif %}
+
+            <ul class="pagination-list">
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li><a class="pagination-link is-current">{{ num }}</a></li>
+                    {% else %}
+                        <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</section>
+{% endblock content %}

@@ -27,7 +27,7 @@ class Bank_Department(models.Model):
     # 部门名称
     department_name = models.CharField(max_length=30, null=False)
     # 部门经理
-    department_manager = models.CharField(max_length=20)
+    department_manager = models.CharField(max_length=20, null=True,blank=True)
     
     def __str__(self):
         return f"{self.branch.branch_name}-{self.department_name}"
