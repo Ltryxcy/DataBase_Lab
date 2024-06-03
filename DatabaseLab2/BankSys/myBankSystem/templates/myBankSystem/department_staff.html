@@ -10,20 +10,28 @@
                 <div class="column is-one-third">
                     <div class="card">
                         <div class="card-image">
-                            <figure class="image is-4by3">
+                            <figure class="image is-1by1">
                                 <img src="{{ staff.staff_photo.url }}" alt="员工照片">
                             </figure>
                         </div>
                         <header class="card-header">
                             <p class="card-header-title">
-                                {{ staff.staff_name }}
+                                姓名: {{ staff.staff_name }}
                             </p>
                         </header>
                         <div class="card-content">
                             <div class="content">
+                                <p>工号: {{ staff.staff_id }}</p>
                                 <p>性别: {{ staff.staff_sex }}</p>
                                 <p>电话: {{ staff.staff_tel }}</p>
                                 <p>部门: {{ staff.department.department_name }}</p>
+                                <div class="buttons">
+                                    <a href="{% url 'myBankSystem:edit_staff' staff.staff_id %}" class="button is-warning">编辑员工信息</a> 
+                                    <form method="post" action="{% url 'myBankSystem:delete_staff' staff.staff_id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="button is-danger">删除该员工</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>

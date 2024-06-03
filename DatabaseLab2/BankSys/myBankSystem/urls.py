@@ -34,6 +34,8 @@ urlpatterns = [
     # 员工信息视图的URL
     path('create_staff/<int:department_id>/', views.create_staff, name='create_staff'),
     path('staff_list/', views.staff_list, name='staff_list'),
+    path('edit_staff/<int:staff_id>/', views.edit_staff, name='edit_staff'),
+    path('delete_staff/<int:staff_id>/', views.delete_staff, name='delete_staff'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

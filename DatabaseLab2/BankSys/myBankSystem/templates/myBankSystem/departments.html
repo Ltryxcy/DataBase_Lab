@@ -30,7 +30,7 @@
                                 <p>部门经理: {{ department.department_manager }}</p>
                                 {%if request.user.is_superuser%}
                                     <button class="button is-info" onclick="location.href='{% url 'myBankSystem:department_staff' department.department_id %}'">员工信息</button>
-                                    <button class="button is-light" onclick="location.href='{% url 'myBankSystem:create_staff' department.department_id %}'">创建员工</button>
+                                    <button class="button is-primary" onclick="location.href='{% url 'myBankSystem:create_staff' department.department_id %}'">创建员工</button>
                                 {%endif%}
                             </div>
                         </div>

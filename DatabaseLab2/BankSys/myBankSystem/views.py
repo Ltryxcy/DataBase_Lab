@@ -500,3 +500,55 @@ def staff_list(request):
     }
     return render(request, 'myBankSystem/department_staff.html', context)
 
+# 删除员工，需要登录状态，管理员权限
+@login_required
+def delete_staff(request, staff_id):
+    # 查看是否有权限
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限删除员工'})
+    # 找到对应员工
+    staff = Bank_Staff.objects.get(staff_id=staff_id)
+    department = staff.department
+    # 删除员工，考虑是否是部门经理
+    if Department_Manager.objects.filter(staff_id=staff_id):
+        manager = Department_Manager.objects.get(staff_id=staff_id)
+        manager.delete()
+    # 删除员工照片
+    if staff.staff_photo.name != 'default.jpg':
+        staff.staff_photo.delete()
+    staff.delete()
+    return redirect('myBankSystem:department_staff', department_id=department.department_id)
+
+# 编辑员工信息，需要登录状态，管理员权限
+@login_required
+def edit_staff(request, staff_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限编辑员工信息'})
+    staff = Bank_Staff.objects.get(staff_id=staff_id)
+    pre_department = staff.department
+    if request.method != 'POST':
+        form = Staff_Edit_Form(instance=staff)
+    else:
+        form = Staff_Edit_Form(instance=staff, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            staff.department = form.cleaned_data['department']
+            staff.staff_name = form.cleaned_data['name']
+            staff.staff_tel = form.cleaned_data['tel']
+            staff.staff_sex = form.cleaned_data['sex']
+            # 如果是部门经理并且更换了部门，删除原部门经理
+            if pre_department != staff.department and Department_Manager.objects.filter(department_id=pre_department.department_id):
+                manager = Department_Manager.objects.get(department_id=pre_department.department_id)
+                manager.delete()
+            if 'photo' in request.FILES:
+                # 删除旧照片
+                if staff.staff_photo.name != 'photos/default.jpg':
+                    staff.staff_photo.delete()
+                staff.staff_photo = form.cleaned_data['photo']
+            staff.save()
+            return redirect('myBankSystem:department_staff', department_id=staff.department.department_id)
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+    context = {'form': form, 'staff': staff}
+    return render(request, 'myBankSystem/edit_staff.html', context)
+                
+

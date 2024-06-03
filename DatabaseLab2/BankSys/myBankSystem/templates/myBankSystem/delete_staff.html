@@ -1,0 +1,18 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %} 确认删除员工 {% endblock page_header %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="notification is-danger">
+            <p>你确定要删除员工 {{ staff.staff_name }} 吗？此操作无法撤销。</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="button is-danger">确认删除</button>
+                <a href="{% url 'myBankSystem:staff_list' %}" class="button is-light">取消</a>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}
