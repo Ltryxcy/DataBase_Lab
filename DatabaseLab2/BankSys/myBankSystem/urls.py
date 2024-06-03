@@ -4,11 +4,12 @@ from . import views
 
 app_name = 'myBankSystem'
 urlpatterns = [
+    # 主页的URL
     path('', views.index, name='index'),
-    path('branches/', views.branches, name='branches'),
+    # 部门视图的URL
     path('departments/', views.departments, name='departments'),
     path('department_staff/<int:department_id>/', views.department_staff, name='department_staff'),
-    path('departments/create_department/', views.create_department, name='create_department'),
+    path('create_department/', views.create_department, name='create_department'),
     # 用户视图的URL
     path('login/', views.bank_customer_login, name='login'),
     path('logout/', views.log_out, name='logout'),
@@ -27,4 +28,8 @@ urlpatterns = [
     path('transactions_info/<int:account_id>/', views.transactions_info, name='transactions_info'),
     # 支行视图的URL
     path('create_branch/', views.create_branch, name='create_branch'),
+    path('branches/', views.branches, name='branches'),
+    # 员工信息视图的URL
+    path('create_staff/<int:department_id>/', views.create_staff, name='create_staff'),
+    path('staff_list/', views.staff_list, name='staff_list'),
 ]

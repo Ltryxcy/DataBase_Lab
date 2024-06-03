@@ -89,7 +89,7 @@ class Branch_Creation_Form(forms.ModelForm):
         
 ## 员工创建表单
 class Staff_Creation_Form(forms.ModelForm):
-    department = forms.ModelChoiceField(label='所属部门', queryset=Bank_Department.objects.all())
+    department = forms.ModelChoiceField(label='所属部门', queryset=Bank_Department.objects.all(),widget=forms.HiddenInput())
     name = forms.CharField(label='姓名', max_length=20)
     tel = forms.CharField(label='电话', max_length=11)
     photo = forms.ImageField(label='照片', required=False)

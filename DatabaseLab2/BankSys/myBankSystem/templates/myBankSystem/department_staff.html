@@ -5,15 +5,8 @@
 {% block content %}
 <section class="section">
     <div class="container">
-        {% if request.user.is_superuser %}
-            <div class="columns is-multiline">
-                <div class="column is-full">
-                    <a href="{% url 'myBankSystem:create_staff' %}" class="button is-primary is-pulled-right">创建员工</a>
-                </div>
-            </div>
-        {% endif %}
         <div class="columns is-multiline">
-            {% for staff in page_obj %}
+            {% for staff in staffs %}
                 <div class="column is-one-third">
                     <div class="card">
                         <div class="card-image">

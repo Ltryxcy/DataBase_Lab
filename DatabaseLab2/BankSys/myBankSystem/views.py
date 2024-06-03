@@ -448,15 +448,8 @@ def create_department(request):
 
 ##  部门员工的视图
 def department_staff(request, department_id):
-    branch_name = None
-    if request.user.is_superuser:
-        branch_name = request.user.username
-    # 获取部门所属支行名称
-    branch = Bank_Department.objects.get(department_id=department_id).branch.branch_name
-    # 如果当前用户不是超级用户或者当前用户不是部门所属支行的支行负责人
-    if (branch_name == None) or (branch_name != branch):
-        # 返回错误页面，错误信息：没有权限查看
-        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看'})
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看部门员工'})
     staff_lists = Bank_Staff.objects.filter(department_id=department_id) # 获取部门员工信息
     # 分页，每页显示6条数据
     paged = Paginator(staff_lists, 6)
@@ -466,7 +459,7 @@ def department_staff(request, department_id):
     return render(request, 'myBankSystem/department_staff.html', context)
 
 @login_required
-def create_Staff(request, department_id):
+def create_staff(request, department_id):
     #  判断是否是超级用户
     if not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '没有权限创建员工'})
@@ -483,7 +476,7 @@ def create_Staff(request, department_id):
             name = form.cleaned_data['name']
             tel = form.cleaned_data['tel']
             sex = form.cleaned_data['sex']
-            staff = Bank_Staff.objects.create(department=department, staff_name=name, staff_tel=tel, sex=sex)
+            staff = Bank_Staff.objects.create(department=department, staff_name=name, staff_tel=tel, staff_sex=sex)
             if 'photo' in request.FILES:
                 staff.photo = form.cleaned_data['photo']
             staff.save()

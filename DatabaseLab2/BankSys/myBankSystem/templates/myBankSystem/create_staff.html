@@ -1,4 +1,4 @@
-{% extends "frontend/base.html" %}
+{% extends "myBankSystem/base.html" %}
 
 {% block page_header %}
   <h2 class="title is-2 has-text-centered">创建一个新的员工</h2>
@@ -6,42 +6,43 @@
 
 {% block content %}
 <div class="container">
-  <form method="post" action="{% url 'staffs:create_staff' department.department_id %}" enctype="multipart/form-data">
+  <form method="post" action="{% url 'myBankSystem:create_staff' department.department_id %}" enctype="multipart/form-data">
     {% csrf_token %}
+    <input type="hidden" name="department" value="{{ department.department_id }}">
     <div class="field">
       <label class="label">员工姓名</label>
       <div class="control">
-        {{ form.staff_name }}
+        {{ form.name }}
       </div>
-      {% if form.staff_name.errors %}
-        <p class="help is-danger">{{ form.staff_name.errors }}</p>
+      {% if form.name.errors %}
+        <p class="help is-danger">{{ form.name.errors }}</p>
       {% endif %}
     </div>
     <div class="field">
       <label class="label">员工性别</label>
       <div class="control">
-        {{ form.staff_sex }}
+        {{ form.sex }}
       </div>
-      {% if form.staff_sex.errors %}
-        <p class="help is-danger">{{ form.staff_sex.errors }}</p>
+      {% if form.sex.errors %}
+        <p class="help is-danger">{{ form.sex.errors }}</p>
       {% endif %}
     </div>
     <div class="field">
       <label class="label">员工电话</label>
       <div class="control">
-        {{ form.staff_tel }}
+        {{ form.tel }}
       </div>
-      {% if form.staff_tel.errors %}
-        <p class="help is-danger">{{ form.staff_tel.errors }}</p>
+      {% if form.tel.errors %}
+        <p class="help is-danger">{{ form.tel.errors }}</p>
       {% endif %}
     </div>
     <div class="field">
       <label class="label">员工照片</label>
       <div class="control">
-        {{ form.staff_photo }}
+        {{ form.photo }}
       </div>
-      {% if form.staff_photo.errors %}
-        <p class="help is-danger">{{ form.staff_photo.errors }}</p>
+      {% if form.photo.errors %}
+        <p class="help is-danger">{{ form.photo.errors }}</p>
       {% endif %}
     </div>
     <div class="field">
@@ -49,7 +50,7 @@
         <button type="submit" class="button is-primary">创建</button>
       </div>
     </div>
-    <input type="hidden" name="next" value="{% url 'staffs:staffs' %}">
+    <input type="hidden" name="next" value="{% url 'myBankSystem:department_staff' department.department_id %}">
   </form>
 </div>
 {% endblock content %}
