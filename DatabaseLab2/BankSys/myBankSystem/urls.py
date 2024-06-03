@@ -1,6 +1,8 @@
 from django.urls import path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'myBankSystem'
 urlpatterns = [
@@ -33,3 +35,5 @@ urlpatterns = [
     path('create_staff/<int:department_id>/', views.create_staff, name='create_staff'),
     path('staff_list/', views.staff_list, name='staff_list'),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -134,9 +134,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'myBankSystem/static',
-]
+# STATICFILES_DIRS = [
+#     'C:/Users/86134/Desktop/.vscode/dblab/DatabaseLab2/BankSys/myBankSystem/static',
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

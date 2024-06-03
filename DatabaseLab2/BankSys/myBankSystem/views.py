@@ -478,7 +478,7 @@ def create_staff(request, department_id):
             sex = form.cleaned_data['sex']
             staff = Bank_Staff.objects.create(department=department, staff_name=name, staff_tel=tel, staff_sex=sex)
             if 'photo' in request.FILES:
-                staff.photo = form.cleaned_data['photo']
+                staff.staff_photo = form.cleaned_data['photo']
             staff.save()
             return redirect('myBankSystem:department_staff', department_id=department_id)
         else:
