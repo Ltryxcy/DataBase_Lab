@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions
+from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions, Bank_Department
 
 # 登录只有用户名和密码两个字段
 class BankCustomer_LoginForm(forms.Form):
@@ -84,4 +84,29 @@ class Account_Transactions_Form(forms.ModelForm):
 class Branch_Creation_Form(forms.ModelForm):
     class Meta:
         model = Bank_Branch
-        fields = ['branch_name', 'branch_city', 'branch_tel', 'branch_manager']    
+        fields = ['branch_name', 'branch_city', 'branch_tel']    
+        
+        
+## 员工创建表单
+class Staff_Creation_Form(forms.ModelForm):
+    department = forms.ModelChoiceField(label='所属部门', queryset=Bank_Department.objects.all())
+    name = forms.CharField(label='姓名', max_length=20)
+    tel = forms.CharField(label='电话', max_length=11)
+    photo = forms.ImageField(label='照片', required=False)
+    sex = forms.ChoiceField(label='性别', choices=[('男', '男'), ('女', '女')])
+    class Meta:
+        model = Bank_Staff
+        fields = ('department', 'name', 'tel', 'photo', 'sex')
+        
+## 员工编辑表单
+class Staff_Edit_Form(forms.ModelForm):
+    staff_id = forms.IntegerField(label='工号', disabled=True)
+    department = forms.ModelChoiceField(label='所属部门', queryset=Bank_Department.objects.all())
+    name = forms.CharField(label='姓名', max_length=20)
+    tel = forms.CharField(label='电话', max_length=11)
+    photo = forms.ImageField(label='照片', required=False)
+    sex = forms.ChoiceField(label='性别', choices=[('男', '男'), ('女', '女')])
+    
+    class Meta:
+        model = Bank_Staff
+        fields = ('staff_id', 'department', 'name', 'tel', 'photo','sex')

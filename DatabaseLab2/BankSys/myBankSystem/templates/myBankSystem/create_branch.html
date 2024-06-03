@@ -41,16 +41,6 @@
                     </div>
 
                     <div class="field">
-                        <label class="label">支行负责人</label>
-                        <div class="control">
-                            <input class="input" type="text" name="branch_manager" value="{{ form.branch_manager.value|default_if_none:'' }}">
-                            {% if form.branch_manager.errors %}
-                                <p class="help is-danger">{{ form.branch_manager.errors }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="field">
                         <div class="control">
                             <button class="button is-primary" type="submit">创建支行</button>
                         </div>

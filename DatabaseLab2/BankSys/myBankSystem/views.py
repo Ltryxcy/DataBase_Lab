@@ -2,12 +2,13 @@ from django.http import HttpResponse
 from django.template import loader
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Bank_Branch, Bank_Department, Bank_Staff, Branch_Manager, Department_Manager, Bank_Customer,Customer_Account, Transactions, Loan
+from .models import Bank_Branch, Bank_Department, Bank_Staff, Department_Manager, Bank_Customer,Customer_Account, Transactions, Loan
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -366,7 +367,7 @@ def transactions_info(request, account_id):
     if request.user.id != customer.user_id:
         return render(request, 'myBankSystem/error.html', {'error': '您没有此账户权限！'})
     # 获取账户的交易记录
-    transactions_list = Transactions.objects.filter(account_id=account_id)
+    transactions_list = Transactions.objects.filter(account_id=account_id).order_by('transaction_id')
     # 分页，每页显示6条数据
     paged = Paginator(transactions_list, 6)
     transactions_page = paged.get_page(request.GET.get('page'))
@@ -383,12 +384,6 @@ def branches(request):
     branches_page = paged.get_page(request.GET.get('page')) # 获取当前页码
     context = {'branches': branches_page}
     
-    managers = Branch_Manager.objects.all() # 获取所有支行负责人
-    # 遍历支行信息，将支行负责人添加到支行信息中
-    for branch in branches_page:
-        for manager in managers:
-            if branch.branch_name == manager.branch_name.branch_name:
-                branch.manager = manager.staff_name 
     # 返回支行管理界面
     template = loader.get_template('myBankSystem/branches.html')
     return HttpResponse(template.render(context, request))
@@ -447,3 +442,31 @@ def department_staff(request, department_id):
     staff_page = paged.get_page(request.GET.get('page'))
     context = {'staffs': staff_page}
     return render(request, 'myBankSystem/department_staff.html', context)
+
+@login_required
+def create_Staff(request, department_id):
+    #  判断是否是超级用户
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限创建员工'})
+    # 获取部门和支行信息
+    branch = Bank_Department.objects.get(department_id=department_id).branch.branch_name
+    department = Bank_Department.objects.get(department_id=department_id)
+    if request.method != 'POST':
+        form = Staff_Creation_Form(initial={'department': department})
+    # 处理表单提交
+    else:
+        form = Staff_Creation_Form(initial={'department':department},data=request.POST,files=request.FILES)
+        # 判断表单是否合法
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            tel = form.cleaned_data['tel']
+            sex = form.cleaned_data['sex']
+            staff = Bank_Staff.objects.create(department=department, staff_name=name, staff_tel=tel, sex=sex)
+            if 'photo' in request.FILES:
+                staff.photo = form.cleaned_data['photo']
+            staff.save()
+            return redirect('myBankSystem:department_staff', department_id=department_id)
+        else:
+            print(f'form.errors: {form.errors}')
+    context = {'form': form, 'department': department}
+    return render(request, 'myBankSystem/create_staff.html', context)

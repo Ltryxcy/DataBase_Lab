@@ -12,8 +12,8 @@ class Bank_Branch(models.Model):
     branch_city = models.CharField(max_length=30)
     # 支行电话
     branch_tel = models.CharField(max_length=11)
-    # 支行负责人
-    branch_manager = models.CharField(max_length=20)
+    # # 支行负责人
+    # branch_manager = models.CharField(max_length=20)
     
     def __str__(self):
         return f"{self.branch_name}" # 返回支行名称
@@ -50,21 +50,23 @@ class Bank_Staff(models.Model):
     def __str__(self):
         return f"{self.staff_id}-{self.staff_name}"
 
-# 支行负责人（<u>工号</u>，支行名称）
-class Branch_Manager(Bank_Staff):
-    # 支行负责人是员工的子类
-    branch_name = models.ForeignKey(Bank_Branch, on_delete=models.CASCADE, related_name='BranchManager')
+# # 支行负责人（<u>工号</u>，支行名称）
+# class Branch_Manager(Bank_Staff):
+#     # 支行负责人是员工的子类
+#     branch_name = models.ForeignKey(Bank_Branch, on_delete=models.CASCADE, related_name='BranchManager')
+#     staff_bankmanager = models.OneToOneField(Bank_Staff, on_delete=models.CASCADE,related_name="Staff_BankManager")
     
-    def __str__(self):
-        return f"{self.staff_id}-{self.staff_name}"
+#     def __str__(self):
+#         return f"{self.staff_bankmanager.staff_id}-{self.staff_bankmanager.staff_name}"
     
 # 部门经理（<u>工号</u>，部门号）
 class  Department_Manager(Bank_Staff):
     # 部门经理是员工的子类
     dept_id = models.ForeignKey(Bank_Department, on_delete=models.CASCADE, related_name='DepartmentManager')
+    staff_departmanager = models.OneToOneField(Bank_Staff,on_delete=models.CASCADE,related_name="StaffManager")
     
     def __str__(self):
-        return f"{self.staff_id}-{self.staff_name}"
+        return f"{self.staff_departmanager.staff_id}-{self.staff_departmanager.staff_name}"
     
 # 客户（<u>身份证号</u>，姓名，手机号，邮箱，名下账户数）
 class Bank_Customer(models.Model):

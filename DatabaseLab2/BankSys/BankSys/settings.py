@@ -89,7 +89,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "bank",
+        'NAME': "mybanksys",
         'USER': "root",
         'PASSWORD': "625625",
         'HOST': "127.0.0.1",

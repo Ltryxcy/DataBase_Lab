@@ -1,59 +1,6 @@
 {% extends "myBankSystem/base.html" %}
-{% comment %}
-{%block page_header%} 支行信息管理 {% endblock%}
 
-{% block content %}
-<section class="section">
-    <div class="container">
-        <div class="columns is-multiline">
-            {% for branch in branches %}
-                <div class="column is-one-third">
-                    <div class="card">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                                {{ branch.branch_name }}
-                            </p>
-                        </header>
-                        <div class="card-content">
-                            <div class="content">
-                                <p>所在城市: {{ branch.branch_city }}</p>
-                                <p>支行电话: {{ branch.branch_tel }}</p>
-                                <p>支行负责人：{{branch.branch_manager}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-            {% if branches.has_previous %}
-                <a class="pagination-previous" href="?page={{ branches.previous_page_number }}">上一页</a>
-            {% else %}
-                <a class="pagination-previous" disabled>上一页</a>
-            {% endif %}
-
-            {% if branches.has_next %}
-                <a class="pagination-next" href="?page={{ branches.next_page_number }}">下一页</a>
-            {% else %}
-                <a class="pagination-next" disabled>下一页</a>
-            {% endif %}
-
-            <ul class="pagination-list">
-                {% for num in branches.paginator.page_range %}
-                    {% if branches.number == num %}
-                        <li><a class="pagination-link is-current">{{ num }}</a></li>
-                    {% else %}
-                        <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </nav>
-    </div>
-</section>
-{% endblock content %} {% endcomment %}
-
-{% block page_header %} 支行信息管理 {% endblock %}
+{% block page_header %} 支行信息管理 {% endblock page_header %}
 
 {% block content %}
 <section class="section">
@@ -78,7 +25,6 @@
                             <div class="content">
                                 <p>所在城市: {{ branch.branch_city }}</p>
                                 <p>支行电话: {{ branch.branch_tel }}</p>
-                                <p>支行负责人：{{ branch.branch_manager }}</p>
                             </div>
                         </div>
                     </div>
