@@ -1,0 +1,50 @@
+{%extends "myBankSystem/base.html" %}
+{%block page_header%} 编辑支行信息 {%endblock%}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box">
+            <form method="post" action="{% url 'myBankSystem:edit_branch' branch.branch_name %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">支行名称</label>
+                    <div class="control">
+                        {{ form.branch_name }}
+                        {% if form.branch_name.errors %}
+                            <p class="help is-danger">{{ form.branch_name.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">所在城市</label>
+                    <div class="control">
+                        {{ form.branch_city }}
+                        {% if form.branch_city.errors %}
+                            <p class="help is-danger">{{ form.branch_city.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">联系电话</label>
+                    <div class="control">
+                        {{ form.branch_tel }}
+                        {% if form.branch_tel.errors %}
+                            <p class="help is-danger">{{ form.branch_tel.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">确认修改</button>
+                        <a class="button is-danger" href="{% url 'myBankSystem:branches' %}">取消</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

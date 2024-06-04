@@ -36,6 +36,8 @@ urlpatterns = [
     # 支行视图的URL
     path('create_branch/', views.create_branch, name='create_branch'),
     path('branches/', views.branches, name='branches'),
+    path('delete_branch/<str:branch_name>/', views.delete_branch, name='delete_branch'),
+    path('edit_branch/<str:branch_name>/', views.edit_branch, name='edit_branch'),
     # 员工信息视图的URL
     path('create_staff/<int:department_id>/', views.create_staff, name='create_staff'),
     path('staff_list/', views.staff_list, name='staff_list'),

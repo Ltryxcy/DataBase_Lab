@@ -1,5 +1,4 @@
-{% extends "myBankSystem/base.html" %}
-{% block title %}创建账户 - 科大银行{% endblock %}
+{% comment %} {% extends "myBankSystem/base.html" %}
 {% block page_header %}创建账户{% endblock %}
 {% block content %}
 <section class="section">
@@ -35,4 +34,89 @@
     </div>
 </section>
 {% endblock %}
-
+ {% endcomment %}
+ <!DOCTYPE html>
+ <html>
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>创建账户</title>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+     <style>
+         .hero {
+             background-image: linear-gradient(to bottom, #0000FF, #87CEFA);
+             color: white;
+             height: 15vh;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             text-align: center;
+         }
+         .main-content {
+             background-color: #f5f5f5; 
+             padding: 2rem;
+         }
+         .footer {
+             background-color: #f5f5f5;
+             padding: 1rem;
+         }
+     </style>
+ </head>
+ <body>
+     <section class="hero is-medium">
+         <div class="hero-body">
+             <p class="title has-text-centered">创建账户</p>
+         </div>
+     </section>
+     <section class="section main-content">
+         <div class="container">
+             <div class="box">
+                 <form method="post">
+                     {% csrf_token %}
+                     <div class="field">
+                         <label class="label">所属客户</label>
+                         <div class="control">
+                             {{ form.customer }}
+                         </div>
+                     </div>
+                     <div class="field">
+                         <label class="label">选择支行</label>
+                         <div class="control">
+                             {{ form.branches }}
+                         </div>
+                     </div>
+                     <div class="field">
+                         <label class="label">余额</label>
+                         <div class="control">
+                             {{ form.account_money }}
+                         </div>
+                     </div>
+                     <div class="field">
+                         <div class="control">
+                             <button class="button is-primary" type="submit">创建账户</button>
+                         </div>
+                     </div>
+                     <div class="field">
+                        <div class="control">
+                            <a href="{% url 'myBankSystem:accounts_info' user.user_id%}" class="button is-link">取消创建</a>
+                        </div>
+                    </div>
+                 </form>
+             </div>
+         </div>
+     </section>
+     <footer class="footer">
+         <div class="content has-text-centered">
+             <p>
+                 <span class="icon">
+                     <i class="fas fa-copyright"></i>
+                 </span>
+                 <small>&nbsp;<a href="https://github.com/Ltryxcy/DataBase_Lab">https://github.com/Ltryxcy/DataBase_Lab</a></small>
+             </p>
+         </div>
+     </footer>
+ </body>
+ </html>
+ 

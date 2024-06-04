@@ -85,6 +85,14 @@ class Branch_Creation_Form(forms.ModelForm):
     class Meta:
         model = Bank_Branch
         fields = ['branch_name', 'branch_city', 'branch_tel']    
+
+class Branch_Edit_Form(forms.ModelForm):
+    class Meta:
+        model = Bank_Branch
+        fields = ['branch_name', 'branch_city', 'branch_tel']
+        widgets = {
+            'branch_name': forms.TextInput(attrs={'disabled': True}),
+        }
         
         
 ## 员工创建表单

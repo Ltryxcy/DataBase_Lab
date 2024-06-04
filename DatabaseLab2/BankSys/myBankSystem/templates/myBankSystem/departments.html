@@ -20,6 +20,22 @@
                             <p class="card-header-title">
                                 {{ department.department_name }}
                             </p>
+                            <!--在header部分添加编辑部门信息和删除部门的buttons-->
+                            {%if request.user.is_superuser%}
+                                <a href="{% url 'myBankSystem:edit_department' department.department_id %}" class="card-header-icon" aria-label="编辑部门信息">
+                                    <span class="icon">
+                                        <i class="fas fa-edit" aria-hidden="true"></i>
+                                    </span>
+                                </a>
+                                <form method="post" action="{% url 'myBankSystem:delete_department' department.department_id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="card-header-icon" aria-label="删除部门">
+                                        <span class="icon">
+                                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
+                                </form>
+                            {%endif%}
                         </header>
                         <div class="card-content">
                             <div class="content">
@@ -31,12 +47,12 @@
                                 {%if request.user.is_superuser%}
                                     <button class="button is-info" onclick="location.href='{% url 'myBankSystem:department_staff' department.department_id %}'">员工信息</button>
                                     <button class="button is-primary" onclick="location.href='{% url 'myBankSystem:create_staff' department.department_id %}'">创建员工</button>
-                                    <button class="button is-warning" onclick="location.href='{% url 'myBankSystem:edit_department' department.department_id %}'">编辑部门信息</button>
+                                    {% comment %} <button class="button is-warning" onclick="location.href='{% url 'myBankSystem:edit_department' department.department_id %}'">编辑部门信息</button> {% endcomment %}
                                     <button class="button is-danger" onclick="location.href='{% url 'myBankSystem:delete_manager' department.department_id %}'">取消经理</button>
-                                    <form method="post" action="{% url 'myBankSystem:delete_department' department.department_id %}" style="display:inline;">
+                                    {% comment %} <form method="post" action="{% url 'myBankSystem:delete_department' department.department_id %}" style="display:inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="button is-danger">删除该部门</button>
-                                    </form> 
+                                    </form>  {% endcomment %}
                                 {%endif%}
                             </div>
                         </div>

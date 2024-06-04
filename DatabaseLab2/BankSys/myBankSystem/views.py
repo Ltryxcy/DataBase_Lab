@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
-from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form, Branch_Edit_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -99,6 +99,7 @@ def change_password(request, user_id):
             form.save()
             # 更新session，修改完密码后，用户需要重新登录
             update_session_auth_hash(request, form.user)
+            logout(request)
             # 返回主页
             return redirect('myBankSystem:index')
     context = {'form': form}
@@ -249,7 +250,7 @@ def create_account(request, user_id):
             account.save()
             user.accounts_cnt += 1
             user.save()
-            transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
+            transaction = Transactions.objects.create(account=account, money=account_money, transaction_type='收入', transaction_detail='创建账户')
             transaction.save()
             messages.success(request, '账户创建成功')
             return redirect('myBankSystem:accounts_info', user_id=user.user_id)
@@ -340,7 +341,7 @@ def trade(request, account_id):
 
                     # 生成账单
                     Transactions.objects.create(account=account, money=-money, transaction_detail=f'转账给 {target_account.account_id}')
-                    Transactions.objects.create(account=target_account, money=money, transaction_detail=f'收到 {account.account_id} 转账')
+                    Transactions.objects.create(account=target_account, money=money,transaction_type='收入', transaction_detail=f'收到 {account.account_id} 转账')
 
                 return redirect('myBankSystem:accounts_info', user_id = customer.user_id)
             else:
@@ -354,6 +355,8 @@ def trade(request, account_id):
         return render(request, 'myBankSystem/error.html', {'error': '账户不存在'})
     except Exception as e:
         return render(request, 'myBankSystem/error.html', {'error': f'转账失败: {str(e)}'})
+
+# 转入金额，需要登录状态
 
 
 
@@ -374,34 +377,6 @@ def transactions_info(request, account_id):
     context = {'transactions': transactions_page, 'account': account}
     return render(request, 'myBankSystem/transactions_info.html', context)
    
-
-        
-##  支行信息界面的视图
-def branches(request):
-    # 获取所有支行信息并按支行名称排序
-    branches_lists = Bank_Branch.objects.all().order_by('branch_name') 
-    paged = Paginator(branches_lists, 6) # 分页，每页显示6条数据
-    branches_page = paged.get_page(request.GET.get('page')) # 获取当前页码
-    context = {'branches': branches_page}
-    
-    # 返回支行管理界面
-    template = loader.get_template('myBankSystem/branches.html')
-    return HttpResponse(template.render(context, request))
-
-# 创建支行，需要登录状态，管理员权限
-@login_required
-def create_branch(request):
-    if not request.user.is_superuser:
-        return render(request, 'myBankSystem/error.html', {'error': '没有权限创建支行'})
-    if request.method == 'POST':
-        form = Branch_Creation_Form(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('myBankSystem:branches')  # 假设有一个显示支行列表的视图
-    else:
-        form = Branch_Creation_Form()
-    
-    return render(request, 'myBankSystem/create_branch.html', {'form': form})
 
     
 ##  部门信息界面的视图
@@ -566,8 +541,8 @@ def edit_staff(request, staff_id):
             staff.staff_tel = form.cleaned_data['tel']
             staff.staff_sex = form.cleaned_data['sex']
             # 如果是部门经理并且更换了部门，删除原部门经理
-            if pre_department != staff.department and Department_Manager.objects.filter(department_id=pre_department.department_id):
-                manager = Department_Manager.objects.get(department_id=pre_department.department_id)
+            if pre_department != staff.department and Department_Manager.objects.filter(departments_id=pre_department.department_id):
+                manager = Department_Manager.objects.get(departments_id=pre_department.department_id)
                 manager.delete()
             if 'photo' in request.FILES:
                 # 删除旧照片
@@ -616,5 +591,68 @@ def delete_manager(request, department_id):
     if manager:
         manager.delete()
     return redirect('myBankSystem:departments')
-                
 
+
+
+##  支行信息界面的视图
+def branches(request):
+    # 获取所有支行信息并按支行名称排序
+    branches_lists = Bank_Branch.objects.all().order_by('branch_name') 
+    paged = Paginator(branches_lists, 6) # 分页，每页显示6条数据
+    branches_page = paged.get_page(request.GET.get('page')) # 获取当前页码
+    context = {'branches': branches_page}
+    
+    # 返回支行管理界面
+    template = loader.get_template('myBankSystem/branches.html')
+    return HttpResponse(template.render(context, request))
+
+# 创建支行，需要登录状态，管理员权限
+@login_required
+def create_branch(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限创建支行'})
+    if request.method == 'POST':
+        form = Branch_Creation_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('myBankSystem:branches')  # 假设有一个显示支行列表的视图
+    else:
+        form = Branch_Creation_Form()
+    
+    return render(request, 'myBankSystem/create_branch.html', {'form': form})
+
+# 删除支行，需要登录状态，管理员权限
+@login_required
+def delete_branch(request, branch_name):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限删除支行'})
+    branch = Bank_Branch.objects.get(branch_name=branch_name)
+    if Bank_Department.objects.filter(branch=branch_name).exists():
+        return render(request, 'myBankSystem/error.html', {'error': '支行下有部门，无法删除'})
+    branch.delete()
+    return redirect('myBankSystem:branches')
+
+# 修改支行信息，需要登录状态，管理员权限
+def edit_branch(request, branch_name):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限编辑支行信息'})
+    branch = Bank_Branch.objects.get(branch_name=branch_name)
+    if request.method != 'POST':
+        form = Branch_Edit_Form(instance=branch)
+    else:
+        post_data = request.POST.copy()
+        post_data['branch_name'] = branch_name
+        form = Branch_Edit_Form(instance=branch, data=post_data)
+        if form.is_valid():
+            form.save()
+            return redirect('myBankSystem:branches')
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+    context = {'form': form, 'branch': branch}
+    return render(request, 'myBankSystem/edit_branch.html', context)
+
+# 贷款信息界面的视图
+# 申请贷款，需要登录状态
+# @login_required
+# def apply_loan(request, user_id):
+    

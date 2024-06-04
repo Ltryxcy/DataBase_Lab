@@ -20,6 +20,16 @@
                             <p class="card-header-title">
                                 {{ branch.branch_name }}
                             </p>
+                            <a href="{% url 'myBankSystem:delete_branch' branch.branch_name %}" class="card-header-icon" aria-label="删除支行">
+                                <span class="icon">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                            <a href="{% url 'myBankSystem:edit_branch' branch.branch_name %}" class="card-header-icon" aria-label="修改支行">
+                                <span class="icon">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </span>
+                            </a>
                         </header>
                         <div class="card-content">
                             <div class="content">
