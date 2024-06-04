@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
-from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -417,8 +417,8 @@ def departments(request):
     # 遍历部门信息，将部门经理添加到部门信息中
     for department in departments_page:
         for manager in managers:
-            if department.department_id == manager.department.department_id:
-                department.manager = manager.staff_name
+            if department.department_id == manager.departments.department_id:
+                department.department_manager = manager.staffs.staff_name
     context = {'departments': departments_page}
     # 返回部门管理界面
     template = loader.get_template('myBankSystem/departments.html')
@@ -444,7 +444,37 @@ def create_department(request):
     
     context = {'form': form}
     return render(request, 'myBankSystem/create_department.html', context)
-    
+
+# 修改部门信息，需要登录状态，管理员权限
+@login_required
+def edit_department(request, department_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限编辑部门信息'})
+    department = Bank_Department.objects.get(department_id=department_id)
+    if request.method != 'POST':
+        form = Department_Edit_Form(instance=department)
+    else:
+        form = Department_Edit_Form(instance=department, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('myBankSystem:departments')
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+    context = {'form': form, 'department': department}
+    return render(request, 'myBankSystem/edit_department.html', context)
+
+# 删除部门，需要登录状态，管理员权限
+@login_required
+def delete_department(request, department_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限删除部门'})
+    department = Bank_Department.objects.get(department_id=department_id)
+    # 如果部门有员工，不能删除
+    if Bank_Staff.objects.filter(department_id=department_id).exists():
+        return render(request, 'myBankSystem/error.html', {'error': '部门下有员工，无法删除部门'})
+    # 删除部门
+    department.delete()
+    return redirect('myBankSystem:departments')
 
 ##  部门员工的视图
 def department_staff(request, department_id):
@@ -550,5 +580,41 @@ def edit_staff(request, staff_id):
             logger.error(f"Form is not valid: {form.errors}")
     context = {'form': form, 'staff': staff}
     return render(request, 'myBankSystem/edit_staff.html', context)
+
+# 设置部门经理，需要登录状态，管理员权限
+@login_required
+def set_manager(request, staff_id, department_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限设置部门经理'})
+
+    try:
+        staff = Bank_Staff.objects.get(staff_id=staff_id)
+    except Bank_Staff.DoesNotExist:
+        return render(request, 'myBankSystem/error.html', {'error': '找不到指定员工'})
+
+    department = get_object_or_404(Bank_Department, department_id=department_id)
+
+    # 如果已经有部门经理，报错，请先删除原经理
+    if Department_Manager.objects.filter(departments=department).exists():
+        return render(request, 'myBankSystem/error.html', {'error': '部门已有经理，请先删除原经理'})
+
+    # 创建部门经理，显式指定 department_id 字段
+    manager = Department_Manager(departments=department, staffs=staff)
+    manager.save()
+
+    return redirect('myBankSystem:departments')
+
+
+# 删除部门经理，需要登录状态，管理员权限
+@login_required
+def delete_manager(request, department_id):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限删除部门经理'})
+    department = Bank_Department.objects.get(department_id=department_id)
+    # 获取部门经理
+    manager = Department_Manager.objects.get(departments=department)
+    if manager:
+        manager.delete()
+    return redirect('myBankSystem:departments')
                 
 

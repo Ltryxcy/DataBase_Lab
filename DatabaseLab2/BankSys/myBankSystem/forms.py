@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions, Bank_Department
+from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions, Bank_Department, Department_Manager
 
 # 登录只有用户名和密码两个字段
 class BankCustomer_LoginForm(forms.Form):
@@ -124,3 +124,24 @@ class Department_Creation_Form(forms.ModelForm):
             'department_manager': forms.TextInput(attrs={'class': 'input'}),
             'branch': forms.HiddenInput(),
         }
+        
+## 部门编辑表单
+class Department_Edit_Form(forms.ModelForm):
+    department_id = forms.IntegerField(label='部门号', disabled=True)
+    branch = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all())
+    department_name = forms.CharField(label='部门名称', max_length=20)
+    class Meta:
+        model = Bank_Department
+        fields = ['department_id', 'department_name', 'branch']
+        widgets = {
+            'department_id': forms.TextInput(attrs={'class': 'input'}),
+            'department_name': forms.TextInput(attrs={'class': 'input'}),
+            'branch': forms.HiddenInput(),
+        }
+
+class Manager_Creation_Form(forms.ModelForm):
+    department = forms.ModelChoiceField(label='所属部门', queryset=Bank_Department.objects.all(),widget=forms.HiddenInput())
+    staff = forms.ModelChoiceField(label='员工', queryset=Bank_Staff.objects.all())
+    class Meta:
+        model = Department_Manager
+        fields = ('department', 'staff')

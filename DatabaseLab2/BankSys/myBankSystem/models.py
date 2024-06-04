@@ -37,7 +37,7 @@ class Bank_Staff(models.Model):
     # 工号为主码且不能为空
     staff_id = models.AutoField(primary_key=True, null=False)
     # 员工照片
-    staff_photo = models.ImageField(upload_to='photos/%Y%m%d/', default='photos/GGbond.jpg')
+    staff_photo = models.ImageField(upload_to='photos/%Y%m%d/', default='photos/default.jpg')
     # 姓名
     staff_name = models.CharField(max_length=20, null=False)
     # 性别
@@ -49,24 +49,15 @@ class Bank_Staff(models.Model):
     
     def __str__(self):
         return f"{self.staff_id}-{self.staff_name}"
-
-# # 支行负责人（<u>工号</u>，支行名称）
-# class Branch_Manager(Bank_Staff):
-#     # 支行负责人是员工的子类
-#     branch_name = models.ForeignKey(Bank_Branch, on_delete=models.CASCADE, related_name='BranchManager')
-#     staff_bankmanager = models.OneToOneField(Bank_Staff, on_delete=models.CASCADE,related_name="Staff_BankManager")
-    
-#     def __str__(self):
-#         return f"{self.staff_bankmanager.staff_id}-{self.staff_bankmanager.staff_name}"
     
 # 部门经理（<u>工号</u>，部门号）
-class  Department_Manager(Bank_Staff):
-    # 部门经理是员工的子类
-    dept_id = models.ForeignKey(Bank_Department, on_delete=models.CASCADE, related_name='DepartmentManager')
-    staff_departmanager = models.OneToOneField(Bank_Staff,on_delete=models.CASCADE,related_name="StaffManager")
-    
+class Department_Manager(models.Model):
+    departments = models.ForeignKey(Bank_Department, on_delete=models.CASCADE, related_name='departments_manager')
+    staffs = models.OneToOneField(Bank_Staff, on_delete=models.CASCADE, related_name='staffs_manager')
+
     def __str__(self):
-        return f"{self.staff_departmanager.staff_id}-{self.staff_departmanager.staff_name}"
+        return f"{self.staffs.staff_id}-{self.staffs.staff_name}"
+
     
 # 客户（<u>身份证号</u>，姓名，手机号，邮箱，名下账户数）
 class Bank_Customer(models.Model):

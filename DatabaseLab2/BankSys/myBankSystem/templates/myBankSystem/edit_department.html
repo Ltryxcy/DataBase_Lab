@@ -1,0 +1,53 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %}
+  <h2 class="title is-2 has-text-centered">修改部门信息</h2>
+{% endblock page_header %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box">
+            <form method="post" action="{% url 'myBankSystem:edit_department' department.department_id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">部门号</label>
+                    <div class="control">
+                        {{ form.department_id }}
+                        {% if form.department_id.errors %}
+                            <p class="help is-danger">{{ form.department_id.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">部门名称</label>
+                    <div class="control">
+                        {{ form.department_name }}
+                        {% if form.department_name.errors %}
+                            <p class="help is-danger">{{ form.department_name.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">所属支行</label>
+                    <div class="control">
+                        {{ form.branch }}
+                        {% if form.branch.errors %}
+                            <p class="help is-danger">{{ form.branch.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">确认修改</button>
+                        <a class="button is-danger" href="{% url 'myBankSystem:departments' %}">取消</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

@@ -12,6 +12,11 @@ urlpatterns = [
     path('departments/', views.departments, name='departments'),
     path('department_staff/<int:department_id>/', views.department_staff, name='department_staff'),
     path('create_department/', views.create_department, name='create_department'),
+    path('delete_department/<int:department_id>/', views.delete_department, name='delete_department'),
+    path('edit_department/<int:department_id>/', views.edit_department, name='edit_department'),
+    # 部门经理视图的URL
+    path('set_manager/<int:staff_id>/<int:department_id>/', views.set_manager, name='set_manager'),
+    path('delete_manager/<int:department_id>/', views.delete_manager, name='delete_manager'),
     # 用户视图的URL
     path('login/', views.bank_customer_login, name='login'),
     path('logout/', views.log_out, name='logout'),
