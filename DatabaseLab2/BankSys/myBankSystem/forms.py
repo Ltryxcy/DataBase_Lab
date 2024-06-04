@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions, Bank_Department, Department_Manager
+from .models import Bank_Customer, Customer_Account, Bank_Staff, Bank_Branch, Transactions, Bank_Department, Department_Manager, Loan
 
 # 登录只有用户名和密码两个字段
 class BankCustomer_LoginForm(forms.Form):
@@ -153,3 +153,12 @@ class Manager_Creation_Form(forms.ModelForm):
     class Meta:
         model = Department_Manager
         fields = ('department', 'staff')
+        
+# 贷款申请表单
+class Apply_Loan_Form(forms.ModelForm):
+    user = forms.ModelChoiceField(label='客户信息', queryset=Bank_Customer.objects.all(), disabled=True)
+    branch = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all(), disabled=True)
+    money = forms.FloatField(label='贷款金额', min_value=0.0)
+    class Meta:
+        model = Loan
+        fields = ('user', 'branch', 'money')

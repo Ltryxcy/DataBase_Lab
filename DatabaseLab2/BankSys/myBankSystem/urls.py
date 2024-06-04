@@ -43,6 +43,10 @@ urlpatterns = [
     path('staff_list/', views.staff_list, name='staff_list'),
     path('edit_staff/<int:staff_id>/', views.edit_staff, name='edit_staff'),
     path('delete_staff/<int:staff_id>/', views.delete_staff, name='delete_staff'),
+    # 贷款视图的URL
+    path('apply_loan/<int:user_id>/<str:branch_name>/', views.apply_loan, name='apply_loan'),
+    path('loans_info/<int:user_id>/', views.loans_info, name='loans_info'),
+    
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

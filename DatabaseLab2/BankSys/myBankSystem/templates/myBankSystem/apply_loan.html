@@ -1,0 +1,41 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %}申请贷款{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="box">
+            <form method="post">
+                {% csrf_token %}
+                <div class="field">
+                    <label class="label">客户信息</label>
+                    <div class="control">
+                        {{ form.user }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">所属支行</label>
+                    <div class="control">
+                        {{ form.branch }}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">贷款金额</label>
+                    <div class="control">
+                        {{ form.money }}
+                    </div>
+                </div>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">申请贷款</button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-light" href="{% url 'myBankSystem:branches'%}">取消</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

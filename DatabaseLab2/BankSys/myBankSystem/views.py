@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
-from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form, Branch_Edit_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form, Branch_Edit_Form, Apply_Loan_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -653,6 +653,34 @@ def edit_branch(request, branch_name):
 
 # 贷款信息界面的视图
 # 申请贷款，需要登录状态
-# @login_required
-# def apply_loan(request, user_id):
-    
+@login_required
+def apply_loan(request, user_id, branch_name):
+    user = get_object_or_404(Bank_Customer, user_id=user_id)
+    if request.user.id != user_id:
+        return render(request, 'myBankSystem/error.html', {'error': '无法为他人申请贷款'})
+    branch = get_object_or_404(Bank_Branch, branch_name=branch_name)
+    if request.method != 'POST':
+        form = Apply_Loan_Form(initial={'user': user, 'branch': branch})
+    else:
+        form = Apply_Loan_Form(initial={'user': user, 'branch': branch}, data=request.POST)
+        if form.is_valid():
+            money = form.cleaned_data['money']
+            loan = Loan.objects.create(customer=user, branch=branch, loan_total=money, loan_balance=money)
+            loan.save()
+            return redirect('myBankSystem:index')
+    context = {'form': form}
+    return render(request, 'myBankSystem/apply_loan.html', context)
+# 查询用户名下的贷款信息，需要登录状态
+@login_required
+def loans_info(request, user_id):
+    user = get_object_or_404(Bank_Customer, user_id=user_id)
+    if request.user.id != user_id:
+        return render(request, 'myBankSystem/error.html', {'error': '无法查看他人贷款信息'})
+    loans_list = Loan.objects.filter(customer=user)
+    # 分页，每页显示6条数据
+    paged = Paginator(loans_list, 6)
+    loans_page = paged.get_page(request.GET.get('page'))
+    context = {'loans': loans_page, 'user': user}
+    return render(request, 'myBankSystem/loans_info.html', context)
+
+

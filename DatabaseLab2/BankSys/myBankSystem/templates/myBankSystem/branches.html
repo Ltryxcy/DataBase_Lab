@@ -35,6 +35,12 @@
                             <div class="content">
                                 <p>所在城市: {{ branch.branch_city }}</p>
                                 <p>支行电话: {{ branch.branch_tel }}</p>
+                                <a class="navbar-item" href="{% url 'myBankSystem:apply_loan' user.id branch.branch_name  %}">
+                                    <span class="icon">
+                                      <i class="fas fa-hand-holding-usd"></i>
+                                    </span>
+                                    <span>申请贷款</span>
+                                </a> 
                             </div>
                         </div>
                     </div>
