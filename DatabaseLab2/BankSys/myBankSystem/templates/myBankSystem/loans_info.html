@@ -59,10 +59,10 @@
                                     <p>未还清金额：{{ loan.loan_balance }}</p>
                                 </div>
                             </div>
-                            {% comment %} <footer class="card-footer">
+                            <footer class="card-footer">
                                 <a href="{% url 'myBankSystem:repay_loan' loan.loan_id %}" class="card-footer-item">还款</a>
-                                <a href="{% url 'myBankSystem:loan_transactions_info' loan.loan_id %}" class="card-footer-item">交易记录</a>
-                            </footer> {% endcomment %}
+                                {% comment %} <a href="{% url 'myBankSystem:loan_transactions_info' loan.loan_id %}" class="card-footer-item">交易记录</a> {% endcomment %}
+                            </footer> 
                         </div>
                     </div>
                 {% endfor %}

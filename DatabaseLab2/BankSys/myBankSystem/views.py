@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from .forms import BankCustomer_LoginForm, BankCustomer_RegisterForm, BankCustomer_EditForm, Customer_Accounts_Form, Accounts_Trade_Form, Branch_Creation_Form
-from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form, Branch_Edit_Form, Apply_Loan_Form
+from .forms import Staff_Creation_Form, Staff_Edit_Form, Department_Creation_Form, Department_Edit_Form, Branch_Edit_Form, Apply_Loan_Form, Repay_Loan_Form, Create_Trade_Form
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.db import transaction
 from django.contrib import messages
@@ -49,6 +49,7 @@ def bank_customer_login(request):
         context = {'form': bank_customer_loginform}
         # 返回登录页面
         return render(request, 'myBankSystem/login.html', context) 
+
 #   用户注册界面
 def bank_customer_register(request):
     if request.method == 'POST':
@@ -202,36 +203,6 @@ def log_out(request):
     return render(request, 'myBankSystem/logout.html')
 
 # 创建账户，要求处于登录状态
-# def create_account(request, user_id):
-#     if request.user.is_authenticated:
-#         user = get_object_or_404(Bank_Customer, user_id=user_id)
-#         if request.user.id != user_id:
-#             return render(request, 'myBankSystem/error.html', {'error': '无法为他人创建账户'})
-#         if request.method != 'POST':
-#             form = Customer_Accounts_Form(initial={'customer': user})
-#             form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
-#         else:
-#             form = Customer_Accounts_Form(request.POST)
-#             form.fields['customer'].queryset = Bank_Customer.objects.filter(user_id=user_id)
-#             if form.is_valid():
-#                 account_money = form.cleaned_data['account_money']
-#                 branch = form.cleaned_data['branches']
-#                 account = Customer_Account.objects.create(customer=user,branch=branch, money=account_money)
-#                 account.save()
-#                 # trigger
-#                 user.accounts_cnt = user.accounts_cnt + 1
-#                 user.save()
-#                 transaction = Transactions.objects.create(account=account, money=account_money, transaction_detail='创建账户')
-#                 transaction.save()
-#                 messages.success(request, '账户创建成功')
-#                 return redirect('myBankSystem:accounts_info', user_id=user.id)
-#             else:
-#                 logger.error("Form is not valid:%s",form.errors)
-        
-#         context = {'form': form, 'user': user}
-#         return render(request, 'myBankSystem/create_account.html', context)
-#     else:
-#         return redirect('myBankSystem:login')
 @login_required
 def create_account(request, user_id):
     logger.info(f"User {request.user.id} is trying to create an account for user_id {user_id}")
@@ -357,7 +328,41 @@ def trade(request, account_id):
         return render(request, 'myBankSystem/error.html', {'error': f'转账失败: {str(e)}'})
 
 # 转入金额，需要登录状态
-
+@login_required
+def create_trade(request, account_id):
+    # 获取账户
+    account = get_object_or_404(Customer_Account, account_id=account_id)
+    # 获取账户的拥有者
+    user = get_object_or_404(Bank_Customer, id=account.user.id)
+    user_id = user.user_id
+    # 判断是否是账户的拥有者
+    if request.user.id != user_id:
+        return render(request, 'myBankSystem/error.html', {'error': '您没有此账户权限！'})
+    if request.method != 'POST':
+        form = Create_Trade_Form(initial={'account': account})
+    else:
+        form = Create_Trade_Form(data=request.POST, initial={'account': account})
+        if form.is_valid():
+            # 获取交易前的账户余额
+            pre_money = account.money
+            trade_money = form.cleaned_data['money']
+            trade_type = form.cleaned_data['type']
+            trade_detail = form.cleaned_data['detail']
+            money = pre_money + trade_money
+            if money < 0:
+                return render(request, 'myBankSystem/error.html', {'error': '余额不足'})
+            transaction = Transactions.objects.create(account=account, money=trade_money, transaction_type=trade_type, transaction_detail=trade_detail)
+            # 保存交易记录
+            transaction.save()
+            # 更新账户余额
+            account.money = money
+            account.save()
+            return redirect('myBankSystem:transactions_info', account_id=account_id)
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+            return render(request, 'myBankSystem/error.html', {'error': '输入不合法'})
+    context = {'form': form, 'account': account}
+    return render(request, 'myBankSystem/create_trade.html', context)
 
 
 ## 交易记录视图
@@ -416,6 +421,7 @@ def create_department(request):
             return redirect('myBankSystem:departments')
         else:
             logger.error(f"Form is not valid: {form.errors}")
+            return render(request, 'myBankSystem/error.html', {'error': '输入不合法'})
     
     context = {'form': form}
     return render(request, 'myBankSystem/create_department.html', context)
@@ -488,6 +494,7 @@ def create_staff(request, department_id):
             return redirect('myBankSystem:department_staff', department_id=department_id)
         else:
             print(f'form.errors: {form.errors}')
+            return render(request, 'myBankSystem/error.html', {'error': '输入不合法'})
     context = {'form': form, 'department': department}
     return render(request, 'myBankSystem/create_staff.html', context)
 
@@ -503,7 +510,7 @@ def staff_list(request):
     context = {
         'page_obj': page_obj,
     }
-    return render(request, 'myBankSystem/department_staff.html', context)
+    return render(request, 'myBankSystem/staff_list.html', context)
 
 # 删除员工，需要登录状态，管理员权限
 @login_required
@@ -655,6 +662,8 @@ def edit_branch(request, branch_name):
 # 申请贷款，需要登录状态
 @login_required
 def apply_loan(request, user_id, branch_name):
+    if request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '管理员无法申请贷款'})
     user = get_object_or_404(Bank_Customer, user_id=user_id)
     if request.user.id != user_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法为他人申请贷款'})
@@ -677,10 +686,38 @@ def loans_info(request, user_id):
     if request.user.id != user_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法查看他人贷款信息'})
     loans_list = Loan.objects.filter(customer=user)
-    # 分页，每页显示6条数据
-    paged = Paginator(loans_list, 6)
+    # 分页，每页显示3条数据
+    paged = Paginator(loans_list, 3)
     loans_page = paged.get_page(request.GET.get('page'))
     context = {'loans': loans_page, 'user': user}
     return render(request, 'myBankSystem/loans_info.html', context)
 
-
+#  还款，需要登录状态
+@login_required
+def repay_loan(request, loan_id):
+    # 找到对应的贷款
+    loan = get_object_or_404(Loan, loan_id=loan_id)
+    user = get_object_or_404(Bank_Customer, user_id=loan.customer.user_id)
+    branch = get_object_or_404(Bank_Branch, branch_name=loan.branch.branch_name)
+    # 判断是否是贷款的拥有者
+    if request.user.id != user.user_id:
+        return render(request, 'myBankSystem/error.html', {'error': '不是本人，无法还款'})
+    if request.method != 'POST':
+        form = Repay_Loan_Form(initial={'loan': loan,'user': user, 'branch': branch})
+    else:
+        form = Repay_Loan_Form(initial={'loan': loan, 'user': user, 'branch': branch}, data=request.POST)
+        if form.is_valid():
+            repay_money = form.cleaned_data['repay_money']
+            if repay_money > loan.loan_balance:
+                return render(request, 'myBankSystem/error.html', {'error': '还款金额大于贷款余额'})
+            loan.loan_balance = loan.loan_balance - repay_money
+            loan.save()
+            # 如果已经还清贷款，自动删除贷款记录，触发器
+            if loan.loan_balance == 0:
+                loan.delete()
+            return redirect('myBankSystem:loans_info', user_id=user.user_id)
+        else:
+            logger.error(f"Form is not valid: {form.errors}")
+            return render(request, 'myBankSystem/error.html', {'error': '输入不合法'})
+    context = {'form': form, 'loan': loan}
+    return render(request, 'myBankSystem/repay_loan.html', context)

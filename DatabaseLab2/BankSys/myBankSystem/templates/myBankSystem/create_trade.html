@@ -1,0 +1,47 @@
+{% extends 'myBankSystem/base.html' %}
+
+{% block page_header %}
+    进行交易
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label class="label">账户信息</label>
+            <div class="control">
+                {{ form.account }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">金额</label>
+            <div class="control">
+                {{ form.money }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">类型</label>
+            <div class="control">
+                {{ form.type }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">详情</label>
+            <div class="control">
+                {{ form.detail }}
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <button class="button is-primary" type="submit">提交交易</button>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <a href="{% url 'myBankSystem:transactions_info' account.account_id %}" class="button is-link">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

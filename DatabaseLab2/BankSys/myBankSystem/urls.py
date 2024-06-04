@@ -31,6 +31,7 @@ urlpatterns = [
     path('accounts_info/<int:user_id>/', views.accounts_info, name='accounts_info'),
     path('delete_account/<int:account_id>/', views.delete_account, name='delete_account'),
     path('trade/<int:account_id>/', views.trade, name='trade'),
+    path('create_trade/<int:account_id>/', views.create_trade, name='create_trade'),
     # 交易记录视图的URL
     path('transactions_info/<int:account_id>/', views.transactions_info, name='transactions_info'),
     # 支行视图的URL
@@ -46,6 +47,7 @@ urlpatterns = [
     # 贷款视图的URL
     path('apply_loan/<int:user_id>/<str:branch_name>/', views.apply_loan, name='apply_loan'),
     path('loans_info/<int:user_id>/', views.loans_info, name='loans_info'),
+    path('repay_loan/<int:loan_id>/', views.repay_loan, name='repay_loan'),
     
 ]
 

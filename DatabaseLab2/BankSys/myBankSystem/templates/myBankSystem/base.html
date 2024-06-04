@@ -269,18 +269,18 @@
                                   </span>
                                   <span>客户信息</span> 
                                 </a>
-                                {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:loans_info' %}">
+                                {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:loans_list' %}">
                                   <span class="icon">
                                     <i class="fas fa-hand-holding-usd"></i>
                                   </span>
                                   <span>贷款信息</span>
-                                {% comment %} </a>
-                                <a class="navbar-item" href="{% url 'myBankSystem:create_staff ' %}">
+                                </a>{% endcomment %}
+                                <a class="navbar-item" href="{% url 'myBankSystem:staff_list' %}">
                                   <span class="icon">
                                     <i class="fas fa-university"></i>
                                   </span>
-                                  <span>员工信息管理</span>
-                                </a> {% endcomment %}
+                                  <span>员工信息</span>
+                                </a> 
                                 {% else %} <!-- 用户视角 -->
                                 <a class="navbar-item" href="{% url 'myBankSystem:user_info' user.id %}">
                                     <span class="icon">

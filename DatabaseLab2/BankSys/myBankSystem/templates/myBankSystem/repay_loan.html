@@ -1,0 +1,48 @@
+{% extends 'myBankSystem/base.html' %}
+
+
+{% block page_header %}
+    还款
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <form method="post">
+        {% csrf_token %}
+        <div class="field">
+            <label class="label">贷款信息</label>
+            <div class="control">
+                {{ form.loan }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">客户信息</label>
+            <div class="control">
+                {{ form.user }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">所属支行</label>
+            <div class="control">
+                {{ form.branch }}
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">还款金额</label>
+            <div class="control">
+                {{ form.repay_money }}
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <button class="button is-primary" type="submit">提交还款</button>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <a href="{% url 'myBankSystem:loans_info' loan.customer.user_id %}" class="button is-link">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

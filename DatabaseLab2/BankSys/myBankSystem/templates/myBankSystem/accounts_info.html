@@ -33,6 +33,7 @@
                         <footer class="card-footer">
                             <a href="{% url 'myBankSystem:trade' account.account_id %}" class="card-footer-item">转账</a>
                             <a href="{% url 'myBankSystem:transactions_info' account.account_id %}" class="card-footer-item">交易记录</a>
+                            <a href="{% url 'myBankSystem:create_trade' account.account_id %}" class="card-footer-item">交易</a>
                         </footer>
                     </div>
                 </div>

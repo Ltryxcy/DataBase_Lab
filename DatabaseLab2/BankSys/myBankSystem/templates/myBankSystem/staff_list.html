@@ -1,0 +1,54 @@
+{% extends "myBankSystem/base.html" %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+            {% for staff in page_obj %}
+                <div class="column is-one-third">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                员工ID：{{ staff.staff_id }}
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                                <p>姓名：{{ staff.staff_name }}</p>
+                                <p>性别：{{ staff.staff_sex }}</p>
+                                <p>联系方式：{{ staff.staff_tel }}</p>
+                                <p>所在分行：{{ staff.department.branch.branch_name }}</p>
+                                <p>所在部门：{{ staff.department.department_name }}</p>
+                                <img src="{{ staff.staff_photo.url }}" alt="员工照片" width="64" height="64">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination" role="navigation" aria-label="pagination">
+            {% if page_obj.has_previous %}
+                <a class="pagination-previous" href="?page={{ page_obj.previous_page_number }}">上一页</a>
+            {% else %}
+                <a class="pagination-previous" disabled>上一页</a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a class="pagination-next" href="?page={{ page_obj.next_page_number }}">下一页</a>
+            {% else %}
+                <a class="pagination-next" disabled>下一页</a>
+            {% endif %}
+
+            <ul class="pagination-list">
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li><a class="pagination-link is-current">{{ num }}</a></li>
+                    {% else %}
+                        <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</section>
+{% endblock %}

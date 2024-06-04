@@ -162,3 +162,24 @@ class Apply_Loan_Form(forms.ModelForm):
     class Meta:
         model = Loan
         fields = ('user', 'branch', 'money')
+        
+# 还款表单
+class Repay_Loan_Form(forms.ModelForm):
+    loan = forms.ModelChoiceField(label='贷款信息', queryset=Loan.objects.all(), disabled=True)
+    user = forms.ModelChoiceField(label='客户信息', queryset=Bank_Customer.objects.all(), disabled=True)
+    branch = forms.ModelChoiceField(label='所属支行', queryset=Bank_Branch.objects.all(), disabled=True)
+    repay_money = forms.FloatField(label='还款金额', min_value=0.0)
+    class Meta:
+        model = Loan
+        fields = ('loan', 'user', 'branch', 'repay_money')
+    
+# 创建交易的表单
+class Create_Trade_Form(forms.ModelForm):
+    trade_type = [('收入', '收入'), ('支出', '支出')]
+    account = forms.ModelChoiceField(label='账户信息', queryset=Customer_Account.objects.all(), disabled=True)
+    money = forms.FloatField(label='金额')
+    type = forms.ChoiceField(label='类型', choices=trade_type)
+    detail = forms.CharField(label='详情', required=False)
+    class Meta:
+        model = Transactions
+        fields = ('account', 'money', 'type', 'detail')
