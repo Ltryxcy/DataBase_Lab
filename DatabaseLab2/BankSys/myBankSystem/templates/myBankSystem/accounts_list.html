@@ -1,0 +1,55 @@
+{% extends "myBankSystem/base.html" %}
+
+{% block page_header %} 账户信息管理 {% endblock page_header %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+            {% for account in accounts %}
+                <div class="column is-one-third">
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                账户ID: {{ account.account_id }}
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+                                <p>账户余额: {{ account.account_balance }}</p>
+                                <p>客户姓名: {{ account.user.name}}</p>
+                                <p>开户时间: {{ account.create_date }}</p>
+                                <p>开户支行: {{ account.branch.branch_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if accounts.has_previous %}
+                <a class="pagination-previous" href="?page={{ accounts.previous_page_number }}">上一页</a>
+            {% else %}
+                <a class="pagination-previous" disabled>上一页</a>
+            {% endif %}
+
+            {% if accounts.has_next %}
+                <a class="pagination-next" href="?page={{ accounts.next_page_number }}">下一页</a>
+            {% else %}
+                <a class="pagination-next" disabled>下一页</a>
+            {% endif %}
+
+            <ul class="pagination-list">
+                {% for num in accounts.paginator.page_range %}
+                    {% if accounts.number == num %}
+                        <li><a class="pagination-link is-current">{{ num }}</a></li>
+                    {% else %}
+                        <li><a class="pagination-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+</section>
+{% endblock content %}

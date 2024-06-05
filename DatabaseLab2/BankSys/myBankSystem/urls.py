@@ -32,8 +32,10 @@ urlpatterns = [
     path('delete_account/<int:account_id>/', views.delete_account, name='delete_account'),
     path('trade/<int:account_id>/', views.trade, name='trade'),
     path('create_trade/<int:account_id>/', views.create_trade, name='create_trade'),
+    path('accounts_list/', views.accounts_list, name='accounts_list'),
     # 交易记录视图的URL
     path('transactions_info/<int:account_id>/', views.transactions_info, name='transactions_info'),
+    path('transactions_list/', views.transactions_list, name='transactions_list'),
     # 支行视图的URL
     path('create_branch/', views.create_branch, name='create_branch'),
     path('branches/', views.branches, name='branches'),
@@ -48,7 +50,7 @@ urlpatterns = [
     path('apply_loan/<int:user_id>/<str:branch_name>/', views.apply_loan, name='apply_loan'),
     path('loans_info/<int:user_id>/', views.loans_info, name='loans_info'),
     path('repay_loan/<int:loan_id>/', views.repay_loan, name='repay_loan'),
-    
+    path('loans_list/', views.loans_list, name='loans_list')
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

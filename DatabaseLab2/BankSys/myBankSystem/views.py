@@ -253,6 +253,19 @@ def accounts_info(request, user_id):
     context = {'accounts': account_page, 'account_user': account_user}
     return render(request, 'myBankSystem/accounts_info.html', context)
 
+# 显示所有账户信息，需要登录状态，管理员权限
+@login_required
+def accounts_list(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看账户信息'})
+    # 获取所有账户信息
+    account_list = Customer_Account.objects.all().order_by('account_id')
+    # 分页，每页显示6条数据
+    paged = Paginator(account_list, 3)
+    account_page = paged.get_page(request.GET.get('page'))
+    context = {'accounts': account_page}
+    return render(request, 'myBankSystem/accounts_list.html', context)
+
 
 # 删除账户，需要登录状态
 @login_required
@@ -265,7 +278,7 @@ def delete_account(request, account_id):
     if request.user.id != user.user_id:
         return render(request, 'myBankSystem/error.html', {'error': '无法删除他人账户'})
     if not account or account.money > 0:
-        return render(request, 'myBankSystem/error.html', {'error': '无法删除账户'})
+        return render(request, 'myBankSystem/error.html', {'error': '无法删除账户，账户中还有余额'})
     # 触发器，自动更新用户的账户数
     user.accounts_cnt = user.accounts_cnt - 1
     user.save()
@@ -381,7 +394,19 @@ def transactions_info(request, account_id):
     transactions_page = paged.get_page(request.GET.get('page'))
     context = {'transactions': transactions_page, 'account': account}
     return render(request, 'myBankSystem/transactions_info.html', context)
-   
+     
+# 显示所有的交易记录，需要登录状态，管理员权限
+@login_required
+def transactions_list(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看交易记录'})
+    # 获取所有的交易记录
+    transactions_list = Transactions.objects.all().order_by('transaction_id')
+    # 分页，每页显示6条数据
+    paged = Paginator(transactions_list, 6)
+    transactions_page = paged.get_page(request.GET.get('page'))
+    context = {'transactions': transactions_page}
+    return render(request, 'myBankSystem/transactions_list.html', context)
 
     
 ##  部门信息界面的视图
@@ -409,8 +434,6 @@ def departments(request):
 def create_department(request):
     if not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '没有权限创建部门'})
-    
-    # branch = Bank_Branch.objects.
     
     if request.method != 'POST':
         form = Department_Creation_Form()
@@ -522,11 +545,11 @@ def delete_staff(request, staff_id):
     staff = Bank_Staff.objects.get(staff_id=staff_id)
     department = staff.department
     # 删除员工，考虑是否是部门经理
-    if Department_Manager.objects.filter(staff_id=staff_id):
-        manager = Department_Manager.objects.get(staff_id=staff_id)
+    if Department_Manager.objects.filter(staffs_id=staff_id):
+        manager = Department_Manager.objects.get(staffs_id=staff_id)
         manager.delete()
     # 删除员工照片
-    if staff.staff_photo.name != 'default.jpg':
+    if staff.staff_photo.name != '/photos/default.jpg':
         staff.staff_photo.delete()
     staff.delete()
     return redirect('myBankSystem:department_staff', department_id=department.department_id)
@@ -597,6 +620,8 @@ def delete_manager(request, department_id):
     manager = Department_Manager.objects.get(departments=department)
     if manager:
         manager.delete()
+    else:
+        return render(request, 'myBankSystem/error.html', {'error': '部门无经理'})
     return redirect('myBankSystem:departments')
 
 
@@ -636,10 +661,14 @@ def delete_branch(request, branch_name):
     branch = Bank_Branch.objects.get(branch_name=branch_name)
     if Bank_Department.objects.filter(branch=branch_name).exists():
         return render(request, 'myBankSystem/error.html', {'error': '支行下有部门，无法删除'})
+    # 有未还完的贷款
+    if Loan.objects.filter(branch=branch_name).exists():
+        return render(request, 'myBankSystem/error.html', {'error': '支行下有未还完的贷款，无法删除'})
     branch.delete()
     return redirect('myBankSystem:branches')
 
 # 修改支行信息，需要登录状态，管理员权限
+@login_required
 def edit_branch(request, branch_name):
     if not request.user.is_superuser:
         return render(request, 'myBankSystem/error.html', {'error': '没有权限编辑支行信息'})
@@ -691,6 +720,18 @@ def loans_info(request, user_id):
     loans_page = paged.get_page(request.GET.get('page'))
     context = {'loans': loans_page, 'user': user}
     return render(request, 'myBankSystem/loans_info.html', context)
+
+# 展示所有贷款信息，需要登录状态，管理员权限
+@login_required
+def loans_list(request):
+    if not request.user.is_superuser:
+        return render(request, 'myBankSystem/error.html', {'error': '没有权限查看贷款信息'})
+    loans_list = Loan.objects.all().order_by('loan_id')
+    paged = Paginator(loans_list, 3)
+    loans_page = paged.get_page(request.GET.get('page'))
+    context = {'loans': loans_page}
+    return render(request, 'myBankSystem/loans_list.html', context)
+    
 
 #  还款，需要登录状态
 @login_required
