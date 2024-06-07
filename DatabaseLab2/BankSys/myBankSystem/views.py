@@ -280,7 +280,7 @@ def delete_account(request, account_id):
     if not account or account.money > 0:
         return render(request, 'myBankSystem/error.html', {'error': '无法删除账户，账户中还有余额'})
     # 触发器，自动更新用户的账户数
-    user.accounts_cnt = user.accounts_cnt - 1
+    # user.accounts_cnt = user.accounts_cnt - 1
     user.save()
     account.delete()
     
@@ -662,6 +662,7 @@ def delete_branch(request, branch_name):
     if Bank_Department.objects.filter(branch=branch_name).exists():
         return render(request, 'myBankSystem/error.html', {'error': '支行下有部门，无法删除'})
     # 有未还完的贷款
+    print(f'loans: {Loan.objects.filter(branch=branch_name)}' )
     if Loan.objects.filter(branch=branch_name).exists():
         return render(request, 'myBankSystem/error.html', {'error': '支行下有未还完的贷款，无法删除'})
     branch.delete()
