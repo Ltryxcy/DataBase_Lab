@@ -68,57 +68,6 @@
                           <i class="fas fa-cog"></i>
                         </span>
                         <span>系统后台</span>
-                      {% comment %} </a>
-                      <a class="navbar-item" href="{% url 'myBankSystem:customer_info' %}">
-                        <span class="icon">
-                          <i class="fas fa-users"></i>
-                        </span>
-                        <span>客户信息</span> 
-                      </a> 
-                      <a class="navbar-item" href="{% url 'myBankSystem:loans_info' %}">
-                        <span class="icon">
-                          <i class="fas fa-hand-holding-usd"></i>
-                        </span>
-                        <span>贷款信息</span>
-                      </a>
-                    {% else %}
-                      <a class="navbar-item" href="{% url 'myBankSystem:accounts' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-credit-card"></i>
-                        </span>
-                        <span>账户信息</span>
-                      </a>
-                      <a class="navbar-item" href="{% url 'myBankSystem:loans' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-hand-holding-usd"></i>
-                        </span>
-                        <span>贷款信息</span>
-                      </a>  
-                      {% endcomment %}
-                      {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:edition' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-user-edit"></i>
-                        </span>
-                        <span>修改信息</span> {% endcomment %}
-                      {% comment %} </a>
-                      <a class="navbar-item" href="{% url 'myBankSystem:change_pwd' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-key"></i>
-                        </span>
-                        <span>修改密码</span>
-                      </a> {% endcomment %}
-                      {% comment %} <a class="navbar-item" href="{% url 'myBankSystem:create_account' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-plus-circle"></i>
-                        </span>
-                        <span>创建账户</span>
-                      </a>  
-                      {% comment %} <a class="navbar-item" href="{% url 'loans:apply_loan' user.id %}">
-                        <span class="icon">
-                          <i class="fas fa-hand-holding-usd"></i>
-                        </span>
-                        <span>申请贷款</span>
-                      </a> {% endcomment %}
                     {% endif %}
                     <hr class="navbar-divider">
                     <form method="post" action="{% url 'myBankSystem:logout' %}" sytle= "display:inline;">
